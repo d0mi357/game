@@ -1,0 +1,37 @@
+package inventory;
+
+public class Weapon extends UseableItem {
+	private int attack;
+	private String type;
+
+	Weapon(String name, int quantity, int durability, int attack, String type) {
+		super(name, quantity, durability);
+		this.attack = attack;
+		this.setType(type);
+		
+		
+	}
+
+	public int getAttack() {
+		return attack;
+	}
+
+	public void setAttack(int attack) {
+		this.attack = attack;
+	}
+	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	@Override
+	public String toString() {
+		return "Fruit: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability() + ", Attack: " + this.attack+", Type: " + this.type;
+	}
+
+	
+}
