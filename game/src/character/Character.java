@@ -1,16 +1,14 @@
-package Character;
+package character;
 
 public abstract class Character {
 	
 	private String name;
-	private int level;
 	private String race;
 	private int health;
 	private int maxHealth;
 	private boolean alive;
 	
-	public Character(String name, int level, String race, int health, int maxHealth) {
-		this.level = level;
+	public Character(String name, String race, int health, int maxHealth) {
 		this.race = race;
 		this.health = health;
 		this.maxHealth = maxHealth;
@@ -24,14 +22,6 @@ public abstract class Character {
 		else if(this.health <= 0) {
 			this.alive = false;
 		}
-	}
-
-	public int getLevel() {
-		return level;
-	}
-
-	public void setLevel(int level) {
-		this.level = level;
 	}
 
 	public String getRace() {

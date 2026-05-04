@@ -9,11 +9,13 @@ public class Demo {
 		inventory.addItem(item1);
 		inventory.addItem(item2);
 		inventory.addItem(fruit1);
-		inventory.displayInventory();
+		//inventory.displayInventory();
 		System.out.println(inventory.maxInventorySpace());
 		inventory.useItem("Apple");
 		inventory.damageItem("Sword", 50);
-		inventory.displayInventory();
+		//inventory.displayInventory();
+		
+		
 		
 	}
 }
