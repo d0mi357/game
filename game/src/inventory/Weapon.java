@@ -4,7 +4,7 @@ public class Weapon extends UseableItem {
 	private int attack;
 	private String type;
 
-	Weapon(String name, int quantity, int durability, int attack, String type) {
+	public Weapon(String name, int quantity, int durability, int attack, String type) {
 		super(name, quantity, durability);
 		this.attack = attack;
 		this.setType(type);
@@ -30,7 +30,7 @@ public class Weapon extends UseableItem {
 	
 	@Override
 	public String toString() {
-		return "Fruit: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability() + ", Attack: " + this.attack+", Type: " + this.type;
+		return "Weapon: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability() + ", Attack: " + this.attack+", Type: " + this.type;
 	}
 
 	

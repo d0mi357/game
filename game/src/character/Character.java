@@ -9,6 +9,7 @@ public abstract class Character {
 	private boolean alive;
 	
 	public Character(String name, String race, int health, int maxHealth) {
+		this.name = name;
 		this.race = race;
 		this.health = health;
 		this.maxHealth = maxHealth;

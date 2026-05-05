@@ -3,6 +3,7 @@ package inventory;
 import java.util.ArrayList;
 
 public class Inventory {
+	public String showInventory = null;
 	private ArrayList<Item> items;
 	private final int MAX_SPACE = 30;
 	
