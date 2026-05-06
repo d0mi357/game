@@ -5,15 +5,22 @@ import inventory.Weapon;
 
 public class Player extends Character{
 	
-	public Inventory inv;
+	public Inventory normalInventory;
+	public Inventory protectiveGear;
+	public Inventory combatGear;
+	
+	private String race;
 	private int level;
 	private int xp;
 	private int max_xp = 1000;
 	private int gold;
 	
-	public Player(String name, String race, int health, int maxHealth) {
-		super(name, race, health, maxHealth);
-		this.inv = new Inventory();
+	public Player(String name, String race, int health, int maxHealth, int strength) {
+		super(name, health, maxHealth, strength);
+		this.normalInventory = new Inventory();
+		this.protectiveGear = new Inventory();
+		this.combatGear = new Inventory();
+		this.race = race;
 	}
 	
 	public void standardEquipment() {
@@ -21,19 +28,27 @@ public class Player extends Character{
 		this.xp = 0;	
 		this.gold = 100;
 		Weapon weapon = new Weapon("Sword", 1, 100, 5, "Melee");
-		this.inv.addItem(weapon);
-		this.inv.displayInventory();
+		this.combatGear.addItem(weapon);
+		this.normalInventory.displayInventory();
 		
 	}
 	
+	public void calculateTotalDamage() {
+		
+	}
+	
+	@Override
 	public String toString() {
 		return "Name: " + getName() + "\n" +
 				"Race: " + getRace() + "\n" +
 				"Health: " + getHealth() + "/" + getMaxHealth() + "\n" +
 				"XP: " + this.xp + "/" + this.max_xp + "\n" +
+				"Strength: " + getStrength() + "\n" + 
 				"Level: " + this.level + "\n" +
 				"Gold: " + this.gold;
 	}
+	
+	//Funktion zum berechnen vom level
 	public void levelUp(int amount) {
 		this.xp += amount;
 		while(this.xp>this.max_xp) {
@@ -78,6 +93,14 @@ public class Player extends Character{
 
 	public void setGold(int gold) {
 		this.gold = gold;
+	}
+
+	public String getRace() {
+		return race;
+	}
+
+	public void setRace(String race) {
+		this.race = race;
 	}
 
 }

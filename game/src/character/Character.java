@@ -3,17 +3,17 @@ package character;
 public abstract class Character {
 	
 	private String name;
-	private String race;
 	private int health;
 	private int maxHealth;
 	private boolean alive;
+	private int strength;
 	
-	public Character(String name, String race, int health, int maxHealth) {
+	public Character(String name, int health, int maxHealth, int strength) {
 		this.name = name;
-		this.race = race;
 		this.health = health;
 		this.maxHealth = maxHealth;
-		alive = true;
+		this.setAlive(true);
+		this.setStrength(strength);
 	}
 	
 	public void takesDamage(int amount) {
@@ -21,17 +21,21 @@ public abstract class Character {
 			this.health -= amount;
 		}
 		else if(this.health <= 0) {
-			this.alive = false;
+			this.setAlive(false);
 		}
 	}
-
-	public String getRace() {
-		return race;
+	
+	public void heal(int amount) {
+		if(this.health<this.maxHealth) {
+			this.health+=amount;
+		}
 	}
-
-	public void setRace(String race) {
-		this.race = race;
+	
+	public void isAlive() {
+		if(this.health<=0)
+			this.alive = false;
 	}
+	
 
 	public int getHealth() {
 		return health;
@@ -56,7 +60,20 @@ public abstract class Character {
 	public void setMaxHealth(int maxHealth) {
 		this.maxHealth = maxHealth;
 	}
+
+	public int getStrength() {
+		return strength;
+	}
+
+	public void setStrength(int strength) {
+		this.strength = strength;
+	}
+
+
+	public void setAlive(boolean alive) {
+		this.alive = alive;
+	}
 	
-	
+	public abstract String toString();
 	
 }

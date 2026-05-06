@@ -1,5 +1,6 @@
 package inventory;
 
+import character.Monster;
 import character.Player;
 
 public class Demo {
@@ -17,11 +18,11 @@ public class Demo {
 		inventory.damageItem("Sword", 50);
 		//inventory.displayInventory();
 		
-		Player player1 = new Player("destroyer", "Elf", 75, 100);
+		Player player1 = new Player("destroyer", "Elf", 75, 100, 10);
 		player1.standardEquipment();
-		System.out.println(player1);
-		player1.levelUp(3399);
-		System.out.println(player1);
+		
+		Monster monster1 = new Monster("Goblin", 50, 60, 10);
+		System.out.println(monster1.toString());
 		
 	}
 }
