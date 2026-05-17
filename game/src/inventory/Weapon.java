@@ -11,6 +11,7 @@ public class Weapon extends UseableItem {
 		
 		
 	}
+	
 
 	public int getAttack() {
 		return attack;

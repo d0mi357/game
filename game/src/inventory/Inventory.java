@@ -11,13 +11,13 @@ public class Inventory {
 		items = new ArrayList<>();
 	}
 	
-		public boolean maxInventorySpace() {
+		public boolean hasFreeSpace() {
 		if(this.items.size()<= MAX_SPACE) return true;
 		else return false;
 	}
 	
 	public void addItem(Item item) {
-		if(this.maxInventorySpace() == true) {
+		if(this.hasFreeSpace() == true) {
 			items.add(item);
 			//System.out.println("Item erfolgreich aufgenommen!");
 		}
@@ -42,11 +42,11 @@ public class Inventory {
 		return m;
 	}
 	
-	public void damageItem(String name, int amaount) {
+	public void damageItem(String name, int amount) {
 		 Item item = findItem(name);
 		 if(item instanceof UseableItem) {
 			 UseableItem useableitem = (UseableItem) item;
-			 useableitem.damageDurability(amaount);
+			 useableitem.damageDurability(amount);
 		 }
 		 
 	}

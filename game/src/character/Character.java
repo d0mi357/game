@@ -17,23 +17,19 @@ public abstract class Character {
 	}
 	
 	public void takesDamage(int amount) {
-		if(this.health > 0) {
-			this.health -= amount;
-		}
-		else if(this.health <= 0) {
-			this.setAlive(false);
-		}
+		health = Math.max(0, health-amount);
+		alive = health > 0;
 	}
 	
 	public void heal(int amount) {
-		if(this.health<this.maxHealth) {
-			this.health+=amount;
-		}
+		health = Math.min(maxHealth, health + amount);
+		alive = health > 0;
 	}
 	
-	public void isAlive() {
-		if(this.health<=0)
-			this.alive = false;
+	public abstract int calculateTotalDamage();
+	
+	public boolean isAlive() {
+		return health > 0;
 	}
 	
 

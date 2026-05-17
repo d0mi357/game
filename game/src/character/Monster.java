@@ -17,4 +17,10 @@ public class Monster extends Character{
 				
 				
 	}
+
+
+	@Override
+	public int calculateTotalDamage() {
+				return this.getStrength();
+	}
 }

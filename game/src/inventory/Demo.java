@@ -2,11 +2,12 @@ package inventory;
 
 import character.Monster;
 import character.Player;
+import combat.Combat;
 
 public class Demo {
 	public static void main(String[] args) {
 		Inventory inventory = new Inventory();
-		Item item1 = new Item("Apple", 32);
+		Item item1 = new Fruit("Obst", "Apple", 32);
 		Item item2 = new Weapon("Sword", 1, 100, 10, "Melee");
 		Fruit fruit1 = new Fruit("Obst", "Banana", 32);
 		inventory.addItem(item1);
@@ -22,7 +23,16 @@ public class Demo {
 		player1.standardEquipment();
 		
 		Monster monster1 = new Monster("Goblin", 50, 60, 10);
+		player1.equipWeapon(0);
+		System.out.println(player1.calculateTotalDamage());
 		System.out.println(monster1.toString());
+		Combat battle1 = new Combat(player1, monster1);
+		battle1.startBattle();
+		
+		
+		
+		
+		
 		
 	}
 }
