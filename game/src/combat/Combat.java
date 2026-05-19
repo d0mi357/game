@@ -11,6 +11,12 @@ public class Combat{
 		this.monster = monster;
 	}
 	
+	public void showDamageAndHealth(String name, int damage, int health) {
+		System.out.println(player.getName()+" greift an und macht " + damage + " schaden!");
+		System.out.println("Verbleibende HP: " + health); 
+		
+	}
+	
 	public void startBattle() {
 		System.out.println("Kampf beginnt " + player.getName() + " vs " + monster.getName()); 
 		int whichturn = 1;
@@ -18,18 +24,17 @@ public class Combat{
 		while(player.isAlive() && monster.isAlive()) {
 			if(whichturn == 1) {
 				damage = player.calculateTotalDamage();
-				//System.out.println("Calculated damage: "+ damage);
 				monster.takesDamage(damage);
-				//System.out.println("Health from Monster: "+ monster.getHealth());
-				whichturn++;
+				this.showDamageAndHealth(player.getName(), damage, monster.getHealth());
+				whichturn=2;
 				
 			}
-			if(whichturn == 2){
+			else{
 				damage = monster.calculateTotalDamage();
-				//System.out.println("Calculated damage: "+ damage);
 				player.takesDamage(damage);
-				//System.out.println("Health from Player: "+ player.getHealth());
-				whichturn--;			}
+				this.showDamageAndHealth(monster.getName(), damage, player.getHealth());
+				whichturn=1;			
+				}
 		}
 	}
 }
