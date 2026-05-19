@@ -20,31 +20,60 @@ public class Combat{
 		System.out.println("Verbleibende HP: " + health); 
 		
 	}
+	public void PlayerTurn() {
+		boolean turnEnded = false;
+		
+		
+		while(!turnEnded) {
+			System.out.println("What will you do ? [Attack], [Switch Weapon]");
+			String choice = scanner.next().trim().toLowerCase();
+			
+			switch(choice) {
+			case "attack":
+				int damage = player.calculateTotalDamage();
+				monster.takesDamage(damage);
+				this.showDamageAndHealth(player.getName(), damage, monster.getHealth());
+				turnEnded = true;
+				break;
+			
+			case "switch":
+			case "switch weapon":
+				System.out.println("Which Weapon do you want to equip?");
+				System.out.println("Combat Inventory: ");
+				player.displayCombatGear();
+				String weaponOfChoice = scanner.next().trim();
+				
+				}
+			
+				
+			}
+			
+			
+			
+		}
+		
+		
+	public void MonsterTurn() {
+				int damage = monster.calculateTotalDamage();
+				player.takesDamage(damage);
+				this.showDamageAndHealth(monster.getName(), damage, player.getHealth());
+		
+	}
+	
 	
 	public void startBattle() {
 		System.out.println("Kampf beginnt " + player.getName() + " vs " + monster.getName()); 
-		int whichturn = 1;
-		int damage = 0;
+		boolean PlayerTurn = true;
 		while(player.isAlive() && monster.isAlive()) {
-			if(whichturn == 1) {
-				System.out.println("Attack(1), Switch Weapon(2)");
-				int choice = scanner.nextInt();
-				if(choice == 2) {
-					System.out.println("Combat Inventory: ");
-					player.displayCombatGear();
-				}
-				
-				damage = player.calculateTotalDamage();
-				monster.takesDamage(damage);
-				this.showDamageAndHealth(player.getName(), damage, monster.getHealth());
-				whichturn=2;		
+			if(PlayerTurn) {
+				PlayerTurn();
 			}
-			else{
-				damage = monster.calculateTotalDamage();
-				player.takesDamage(damage);
-				this.showDamageAndHealth(monster.getName(), damage, player.getHealth());
-				whichturn=1;			
-				}
+			else
+				MonsterTurn();
+			
+			PlayerTurn = false;
+		
+				
 			
 		}
 	}

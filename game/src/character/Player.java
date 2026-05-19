@@ -57,6 +57,15 @@ public class Player extends Character{
 		return (equippedIndex >= 0) ? combatGear.get(equippedIndex) : null;
 	}
 	
+	public int getIndexCombatGear(String name) {
+		int index = 0;
+		for(Weapon w : combatGear) {
+			if(w.getName().equalsIgnoreCase(name)) {
+				index = 
+			}
+		}
+	}
+	
 	public int calculateTotalDamage() {
 		int total = this.getStrength();
 		Weapon w = getEquippedWeapon();
