@@ -3,12 +3,13 @@ package character;
 import java.util.ArrayList;
 
 import inventory.Inventory;
+import inventory.Item;
 import inventory.Weapon;
 
 public class Player extends Character{
 	
 	public Inventory normalInventory;
-	public Inventory protectiveGear;
+	//public Inventory protectiveGear;
 	public ArrayList<Weapon> combatGear;
 	
 	private String race;
@@ -21,10 +22,22 @@ public class Player extends Character{
 	public Player(String name, String race, int health, int maxHealth, int strength) {
 		super(name, health, maxHealth, strength);
 		this.normalInventory = new Inventory();
-		this.protectiveGear = new Inventory();
 		this.combatGear = new ArrayList<>();
 		this.race = race;
 	}
+	
+	public void addWeapon(Weapon weapon) {
+		if(combatGear.size()<3) {
+			combatGear.add(weapon);
+		}
+	}
+	
+	public void displayCombatGear() {
+		for(Weapon w : combatGear) {
+			System.out.println(w.toString()); 
+		}
+	}
+
 	
 	public void standardEquipment() {
 		this.level = 1;

@@ -1,6 +1,6 @@
 package inventory;
 
-public class Item {
+public abstract class Item {
 	
 	private String name;
 	private int quantity;
@@ -32,8 +32,6 @@ public class Item {
 	}
 	
 
-	public String toString() {
-		return "Item: "+this.name+", Quantity: "+this.quantity;
-	}
+	public abstract String toString();
 
 }

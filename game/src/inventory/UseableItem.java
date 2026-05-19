@@ -21,6 +21,12 @@ public class UseableItem extends Item{
 		if(this.durability 	> 0)
 				this.durability = this.durability - amount;
 	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	

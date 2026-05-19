@@ -19,13 +19,16 @@ public class Demo {
 		inventory.damageItem("Sword", 50);
 		//inventory.displayInventory();
 		
+		
 		Player player1 = new Player("destroyer", "Elf", 75, 100, 10);
 		player1.standardEquipment();
 		
+		Weapon weapon2 = new Weapon("Bow", 100, 500, 5, "Long Range");
+		player1.addWeapon(weapon2);
+		
+		
 		Monster monster1 = new Monster("Goblin", 50, 60, 10);
 		player1.equipWeapon(0);
-		System.out.println(player1.calculateTotalDamage());
-		System.out.println(monster1.toString());
 		Combat battle1 = new Combat(player1, monster1);
 		battle1.startBattle();
 		
