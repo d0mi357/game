@@ -38,10 +38,15 @@ public class Combat{
 			
 			case "switch":
 			case "switch weapon":
+				System.out.println("Your current equpied Weapon: "+ player);
 				System.out.println("Which Weapon do you want to equip?");
 				System.out.println("Combat Inventory: ");
 				player.displayCombatGear();
 				String weaponOfChoice = scanner.next().trim();
+				int idx = player.getIndexCombatGear(weaponOfChoice);
+				player.equipWeapon(idx);
+				player.showEquippedWeapon();
+				System.out.println("You have succesfully switch your equpied Weapon to \n"+player.combatGear.get(idx));
 				
 				}
 			
@@ -63,15 +68,15 @@ public class Combat{
 	
 	public void startBattle() {
 		System.out.println("Kampf beginnt " + player.getName() + " vs " + monster.getName()); 
-		boolean PlayerTurn = true;
+		boolean PlayerTurnBattle = true;
 		while(player.isAlive() && monster.isAlive()) {
-			if(PlayerTurn) {
+			if(PlayerTurnBattle) {
 				PlayerTurn();
 			}
 			else
 				MonsterTurn();
 			
-			PlayerTurn = false;
+			PlayerTurnBattle = false;
 		
 				
 			

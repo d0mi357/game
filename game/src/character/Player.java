@@ -56,14 +56,25 @@ public class Player extends Character{
 	private Weapon getEquippedWeapon() {
 		return (equippedIndex >= 0) ? combatGear.get(equippedIndex) : null;
 	}
+	public String getEquppedWeaponName() {
+		return combatGear.get(equippedIndex).getName();	
+		}
+	
+	public void showEquippedWeapon() {
+		System.out.println(this.getEquippedWeapon());
+	}
 	
 	public int getIndexCombatGear(String name) {
-		int index = 0;
-		for(Weapon w : combatGear) {
-			if(w.getName().equalsIgnoreCase(name)) {
-				index = 
-			}
+		if(name == null || name.isBlank()) {
+			throw new IllegalArgumentException("Weapon name can not be empty!");
 		}
+		for (int i = 0; i < combatGear.size(); i++) {
+	        Weapon w = combatGear.get(i);
+	        if (w.getName().equalsIgnoreCase(name)) {
+	            return i;               // Treffer → Index zurückgeben
+	        }
+	    }
+	    return -1;                      // kein Treffer
 	}
 	
 	public int calculateTotalDamage() {

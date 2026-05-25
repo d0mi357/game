@@ -30,7 +30,10 @@ public class Demo {
 		Monster monster1 = new Monster("Goblin", 50, 60, 10);
 		player1.equipWeapon(0);
 		Combat battle1 = new Combat(player1, monster1);
-		battle1.startBattle();
+		//battle1.startBattle();
+		
+		battle1.PlayerTurn();
+		
 		
 		
 		
