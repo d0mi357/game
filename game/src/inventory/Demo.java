@@ -2,7 +2,8 @@ package inventory;
 
 import character.Monster;
 import character.Player;
-import combat.Combat;
+import combat.CombatEngine;
+import combat.CombatView;
 
 public class Demo {
 	public static void main(String[] args) {
@@ -27,12 +28,14 @@ public class Demo {
 		player1.addWeapon(weapon2);
 		
 		
-		Monster monster1 = new Monster("Goblin", 50, 60, 10);
+		Monster monster1 = new Monster("Goblin", 50, 60, 10, 100);
 		player1.equipWeapon(0);
-		Combat battle1 = new Combat(player1, monster1);
+		CombatEngine battle1 = new CombatEngine(player1, monster1);
 		//battle1.startBattle();
 		
-		battle1.PlayerTurn();
+		CombatView view1 = new CombatView(battle1);
+		view1.startBattle();
+		
 		
 		
 		

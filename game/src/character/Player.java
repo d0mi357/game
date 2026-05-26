@@ -18,6 +18,7 @@ public class Player extends Character{
 	private int max_xp = 1000;
 	private int gold;
 	private int equippedIndex = -1;
+	private final int DAMAGEUSEITEM = 1;
 	
 	public Player(String name, String race, int health, int maxHealth, int strength) {
 		super(name, health, maxHealth, strength);
@@ -37,6 +38,9 @@ public class Player extends Character{
 			System.out.println(w.toString()); 
 		}
 	}
+	public void damageCombatItem() {
+		this.getEquippedWeapon().damageDurability(DAMAGEUSEITEM);
+	}
 
 	
 	public void standardEquipment() {
@@ -53,7 +57,7 @@ public class Player extends Character{
 			equippedIndex = index;
 	}
 	
-	private Weapon getEquippedWeapon() {
+	public Weapon getEquippedWeapon() {
 		return (equippedIndex >= 0) ? combatGear.get(equippedIndex) : null;
 	}
 	public String getEquppedWeaponName() {
@@ -61,7 +65,7 @@ public class Player extends Character{
 		}
 	
 	public void showEquippedWeapon() {
-		System.out.println(this.getEquippedWeapon());
+		System.out.println(this.getEquippedWeapon().getName());
 	}
 	
 	public int getIndexCombatGear(String name) {
