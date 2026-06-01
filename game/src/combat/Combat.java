@@ -38,7 +38,7 @@ public class Combat{
 			
 			case "switch":
 			case "switch weapon":
-				System.out.println("Your current equpied Weapon: "+ player);
+				System.out.println("Your current equpied Weapon: "+ player.getEquippedWeapon());
 				System.out.println("Which Weapon do you want to equip?");
 				System.out.println("Combat Inventory: ");
 				player.displayCombatGear();
