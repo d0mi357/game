@@ -2,9 +2,9 @@ package character;
 
 public abstract class Character {
 	
-	private String name;
+	private final String name;
 	private int health;
-	private int maxHealth;
+	private final int maxHealth;
 	private boolean alive;
 	private int strength;
 	

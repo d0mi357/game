@@ -18,14 +18,16 @@ public class UseableItem extends Item{
 	}
 	
 	public void damageDurability(int amount) {
-		if(this.durability 	> 0)
-				this.durability = this.durability - amount;
+		if(amount > 0) {
+			//throw new IllegalArgumentException("damage amount must be >= 0");
+		}
+		int newDurability = Math.max(0, this.durability - amount);
+		setDurability(newDurability);
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return "UsableItem: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability();
 	}
 	
 
