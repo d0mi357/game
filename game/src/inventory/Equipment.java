@@ -9,7 +9,8 @@ public class Equipment {
 	public ArrayList<Weapon> combatGear;
 
 	public Equipment() {
-		 
+		combatGear = new ArrayList<>();
+		standardEquipment();
 	}
 
 

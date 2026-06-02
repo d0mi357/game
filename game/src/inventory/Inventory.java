@@ -11,7 +11,7 @@ public class Inventory {
 		items = new ArrayList<>();
 	}
 	
-		public boolean hasFreeSpace() {
+	public boolean hasFreeSpace() {
 		if(this.items.size()<= MAX_SPACE) return true;
 		else return false;
 	}

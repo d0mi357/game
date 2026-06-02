@@ -1,7 +1,5 @@
 package character;
 
-import java.util.ArrayList;
-
 import inventory.Equipment;
 import inventory.Inventory;
 import inventory.Weapon;
@@ -9,7 +7,7 @@ import inventory.Weapon;
 public class Player extends Character{
 	
 	public Inventory normalInventory;
-	//public Inventory protectiveGear;
+	//public Inventory protectiveGear;	
 	public Equipment equipment;
 	
 	private String race;
@@ -18,10 +16,11 @@ public class Player extends Character{
 	private int max_xp = 1000;
 	private int gold;
 	
-	public Player(String name, String race, int health, int maxHealth, int strength) {
-		super(name, health, maxHealth, strength);
+	public Player(String name, String race, int health, int maxHealth, int strength, int agility) {
+		super(name, health, maxHealth, strength, agility);
 		this.normalInventory = new Inventory();
 		this.race = race;
+		this.equipment = new Equipment();
 	}
 	
 

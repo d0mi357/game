@@ -1,5 +1,6 @@
 package inventory;
 
+import character.Goblin;
 import character.Monster;
 import character.Player;
 import combat.CombatEngine;
@@ -10,16 +11,16 @@ public class Demo {
 		
 		
 		
-		Player player1 = new Player("destroyer", "Elf", 75, 100, 10);
+		Player player1 = new Player("destroyer", "Elf", 75, 100, 10, 2);
 		player1.startStatus();
 		
 		Weapon weapon2 = new Weapon("Bow", 100, 500, 5, "Long Range");
-		player1.addWeapon(weapon2);
+		player1.equipment.addWeapon(weapon2);
 		
 		
-		Monster monster1 = new Monster("Goblin", 50, 60, 10, 100);
-		player1.equipWeapon(0);
-		CombatEngine battle1 = new CombatEngine(player1, monster1);
+		Goblin goblin1 = new Goblin("Goblin", 50, 60, 10, 3, 100);
+		player1.equipment.equipWeapon(weapon2);
+		CombatEngine battle1 = new CombatEngine(player1, goblin1);
 		//battle1.startBattle();
 		
 		CombatView view1 = new CombatView(battle1);

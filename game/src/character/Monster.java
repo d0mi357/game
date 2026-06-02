@@ -1,15 +1,17 @@
 package character;
 
-public class Monster extends Character{
+public abstract class Monster extends Character{
 	
 	private int droppedXP;
 	
-	public Monster(String name, int health, int maxHealth, int strength, int droppedXP) {
-		super(name, health, maxHealth, strength);
+	public Monster(String name, int health, int maxHealth, int strength, int agility,  int droppedXP) {
+		super(name, health, maxHealth, strength, agility);
 		this.setDroppedXP(droppedXP);
 	}
 	
-	
+
+
+
 	@Override
 	public String toString() {
 		return "Name: " + getName() + "\n" +
@@ -24,7 +26,8 @@ public class Monster extends Character{
 	public int calculateTotalDamage() {
 				return this.getStrength();
 	}
-
+	public abstract void lastStance();
+	
 
 	public int getDroppedXP() {
 		return droppedXP;

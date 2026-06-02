@@ -22,9 +22,12 @@ public class CombatEngine{
 			if(isPlayerTurn) {
 				damage = player.calculateTotalDamage();
 				monster.takesDamage(damage);
-				player.damageCombatItem();
+				player.equipment.damageCombatItem();
 				}
 			else {
+				if(this.hpPercentage()<0.3) {
+					monster.lastStance();
+				}
 				damage = monster.calculateTotalDamage();
 				player.takesDamage(damage);
 				}
@@ -39,7 +42,9 @@ public class CombatEngine{
 			return true;
 	}
 	
-	
+	public float hpPercentage() {
+		return monster.getHealth() / monster.getMaxHealth();
+	}
 	
 	
 	public boolean isPlayerTurn() {
