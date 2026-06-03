@@ -99,25 +99,48 @@ public class CombatView {
 			
 			case "switch":
 			case "switch weapon":
-				System.out.println("Your current equpied Weapon: "+ getEquipment().getEquippedWeaponName());
-				System.out.println("Which Weapon do you want to equip?");
-				System.out.println("Combat Inventory: ");
-				getEquipment().displayCombatGear();
-				String weaponOfChoice = scanner.next().trim();
-				int idx = getEquipment().getIndexCombatGear(weaponOfChoice);
-				getEquipment().equipWeapon(getEquipment().combatGear.get(idx));
-				getEquipment().showEquippedWeapon();
-				System.out.println("You have succesfully switch your equpied Weapon to \n"+getEquipment().combatGear.get(idx).getName());
+				this.handleWeaponSwitch();
 				break;
 				
 				}	
 			}
 	
+	public void handleWeaponSwitch() {
+		System.out.println("\n==============================================");
+	    System.out.println("🔄  Weapon Switch");
+	    System.out.println("----------------------------------------------");
+	    
+	    System.out.println("Current Weapon: [" + this.EquippedWeapon() + "]");
+	    System.out.println("\nWhich Weapon do you want to chosse? (Enter name):");
+	    System.out.println("----------------------------------------------");
+	    
+	    
+	    this.getEquipment().displayCombatGear();
+	    System.out.println("==============================================");
+	    System.out.print("> ");
+	    
+	    String weaponOfChoice = scanner.next().trim();
+	    
+	    int idx = getEquipment().getIndexCombatGear(weaponOfChoice);
+	    
+	    System.out.println("\n----------------------------------------------");
+	    getEquipment().equipWeaponByIndex(idx);
+	    System.out.println("----------------------------------------------");
+	    
+	    
+	}
+	
+	
+	
+
 	private String getPlayerName() {
 		return engine.getPlayer().getName();
 	}
 	private Equipment getEquipment() {
 		return engine.getPlayer().equipment;
+	}
+	private Weapon EquippedWeapon() {
+		return this.getEquipment().getEquippedWeapon();
 	}
 	private int getPlayerHP() {
 		return engine.getPlayer().getHealth();
@@ -134,6 +157,7 @@ public class CombatView {
 	private String getMonsterName() {
 		return engine.getMonster().getName();
 	}
+	
 			
 	public void handleMonsterTurn() {
 		int damage = engine.executeAttack();
