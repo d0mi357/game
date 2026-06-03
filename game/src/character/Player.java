@@ -16,6 +16,12 @@ public class Player extends Character{
 	private int max_xp = 1000;
 	private int gold;
 	
+	public Player(){
+		super("Unbekannter Held", 100, 100, 10, 10);
+		this.normalInventory = new Inventory();
+		this.equipment = new Equipment();
+	}
+	
 	public Player(String name, String race, int health, int maxHealth, int strength, int agility) {
 		super(name, health, maxHealth, strength, agility);
 		this.normalInventory = new Inventory();

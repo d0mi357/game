@@ -4,6 +4,7 @@ public class UseableItem extends Item{
 	
 	private int durability;
 	
+	public UseableItem() {super();}
 	public UseableItem(String name, int quantity, int durability) {
 		super(name, quantity);
 		this.durability = durability;

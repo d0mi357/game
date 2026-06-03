@@ -4,6 +4,9 @@ public class Weapon extends UseableItem {
 	private int attack;
 	private String type;
 
+	public Weapon() {super();}
+
+	
 	public Weapon(String name, int quantity, int durability, int attack, String type) {
 		super(name, quantity, durability);
 		this.attack = attack;

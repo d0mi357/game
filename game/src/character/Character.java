@@ -16,6 +16,7 @@ public abstract class Character {
 		this.setAlive(true);
 		this.setStrength(strength);
 	}
+	
 
 	public void takesDamage(int damage) {
 		health = Math.max(0, health - damage);
