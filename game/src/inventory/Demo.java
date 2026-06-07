@@ -28,9 +28,7 @@ public class Demo {
 		Weapon weapon2 = new Weapon("Bow", 100, 500, 5, "Long Range");
 		player1.equipment.addWeapon(weapon2);
 		
-		System.out.println("--- STARTE TEST-SPEICHERUNG ---");
-		saveManager.savePlayer(player1);
-		System.out.println("--- TEST-SPEICHERUNG FERTIG ---");
+	
 		
 		
 		Goblin goblin1 = new Goblin("Goblin", 50, 60, 10, 3, 100);
@@ -41,6 +39,9 @@ public class Demo {
 		CombatView view1 = new CombatView(battle1);
 		view1.startBattle();
 		
+		System.out.println("--- STARTE TEST-SPEICHERUNG ---");
+		saveManager.savePlayer(player1);
+		System.out.println("--- TEST-SPEICHERUNG FERTIG ---");
 		
 		
 		

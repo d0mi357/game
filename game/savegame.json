@@ -1,0 +1,43 @@
+{
+  "normalInventory": {
+    "items": [],
+    "MAX_SPACE": 30
+  },
+  "equipment": {
+    "DAMAGEUSEITEM": 1,
+    "combatGear": [
+      {
+        "attack": 5,
+        "type": "Melee",
+        "durability": 100,
+        "name": "Sword",
+        "quantity": 1
+      },
+      {
+        "attack": 5,
+        "type": "Long Range",
+        "durability": 500,
+        "name": "Bow",
+        "quantity": 100
+      },
+      {
+        "attack": 5,
+        "type": "Long Range",
+        "durability": 500,
+        "name": "Bow",
+        "quantity": 100
+      }
+    ]
+  },
+  "race": "Elf",
+  "level": 1,
+  "xp": 0,
+  "max_xp": 1000,
+  "gold": 100,
+  "name": "destroyer",
+  "health": 75,
+  "maxHealth": 100,
+  "alive": true,
+  "strength": 10,
+  "agility": 0
+}
