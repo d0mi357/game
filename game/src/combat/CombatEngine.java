@@ -13,6 +13,9 @@ public class CombatEngine{
 	public CombatEngine(Player player, Monster monster) {
 		this.player = player;
 		this.monster = monster;
+		int health = 0;
+		health = player.getMaxHealth();
+		player.setHealth(health);
 	}
 	
 

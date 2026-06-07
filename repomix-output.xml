@@ -1,0 +1,1157 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+game/
+  .settings/
+    org.eclipse.core.resources.prefs
+    org.eclipse.jdt.core.prefs
+  lib/
+    gson-2.11.0.jar
+  src/
+    character/
+      Character.java
+      Goblin.java
+      Monster.java
+      Player.java
+    combat/
+      CombatEngine.java
+      CombatView.java
+    inventory/
+      Demo.java
+      Equipment.java
+      Fruit.java
+      Inventory.java
+      Item.java
+      UseableItem.java
+      Weapon.java
+    persistence/
+      package-info.java
+      SaveGameManager.java
+  .classpath
+  .gitignore
+  .project
+  savegame.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="game/.settings/org.eclipse.core.resources.prefs">
+eclipse.preferences.version=1
+encoding/<project>=UTF-8
+</file>
+
+<file path="game/src/character/Goblin.java">
+package character;
+
+public class Goblin extends Monster{
+	
+	public Goblin(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
+		super(name, health, maxHealth, strength, agility, droppedXP);
+	}
+
+	@Override
+	public void lastStance() {
+		if(this.getStrength()<30) {
+			setStrength((int) (getStrength()*1.2));
+		}
+	 
+		
+	}
+}
+</file>
+
+<file path="game/src/inventory/Fruit.java">
+package inventory;
+
+public class Fruit extends Item{
+	private String type;
+	
+	public Fruit(String type, String name, int quantity) {
+		super(name, quantity);
+		this.type = type;
+		
+	}
+	
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getType() {
+		return this.type;
+	}
+	@Override
+	public String toString() {
+		return "Type: " + type +", Fruit: " + getName() + ", Quantity: " + getQuantity();
+	}
+}
+</file>
+
+<file path="game/src/persistence/package-info.java">
+package persistence;
+</file>
+
+<file path="game/.gitignore">
+/bin/
+</file>
+
+<file path="game/.project">
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>game</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+</projectDescription>
+</file>
+
+<file path="game/savegame.json">
+{
+  "normalInventory": {
+    "items": [],
+    "MAX_SPACE": 30
+  },
+  "equipment": {
+    "equippedWeapon": {
+      "attack": 5,
+      "type": "Melee",
+      "durability": 97,
+      "name": "Sword",
+      "quantity": 1
+    },
+    "DAMAGEUSEITEM": 1,
+    "combatGear": [
+      {
+        "attack": 5,
+        "type": "Melee",
+        "durability": 97,
+        "name": "Sword",
+        "quantity": 1
+      },
+      {
+        "attack": 5,
+        "type": "Long Range",
+        "durability": 493,
+        "name": "Bow",
+        "quantity": 100
+      },
+      {
+        "attack": 5,
+        "type": "Long Range",
+        "durability": 500,
+        "name": "Bow",
+        "quantity": 100
+      }
+    ]
+  },
+  "race": "Elf",
+  "level": 1,
+  "xp": 0,
+  "max_xp": 1000,
+  "gold": 100,
+  "name": "destroyer",
+  "health": 50,
+  "maxHealth": 100,
+  "alive": true,
+  "strength": 10,
+  "agility": 0
+}
+</file>
+
+<file path="game/src/combat/CombatEngine.java">
+package combat;
+
+
+import character.Monster;
+import character.Player;
+
+
+public class CombatEngine{
+	private Player player;
+	private Monster monster;
+	private boolean isPlayerTurn = true;
+	
+	public CombatEngine(Player player, Monster monster) {
+		this.player = player;
+		this.monster = monster;
+		int health = 0;
+		health = player.getMaxHealth();
+		player.setHealth(health);
+	}
+	
+
+	public int executeAttack() {
+		int damage = 0;
+		
+			if(isPlayerTurn) {
+				damage = player.calculateTotalDamage();
+				monster.takesDamage(damage);
+				player.equipment.damageCombatItem();
+				}
+			else {
+				if(this.hpPercentage()<0.3) {
+					monster.lastStance();
+				}
+				damage = monster.calculateTotalDamage();
+				player.takesDamage(damage);
+				}
+			isPlayerTurn = !isPlayerTurn;
+			return damage;
+			}	
+	
+	public boolean isBattleOver() {
+		if(player.isAlive() == true && monster.isAlive() == true) 
+			return false;
+		else
+			return true;
+	}
+	
+	public float hpPercentage() {
+		return monster.getHealth() / monster.getMaxHealth();
+	}
+	
+	
+	public boolean isPlayerTurn() {
+		return isPlayerTurn;
+	}
+
+
+	public void setPlayerTurn(boolean isPlayerTurn) {
+		this.isPlayerTurn = isPlayerTurn;
+	}
+
+
+	public Player getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+
+	public Monster getMonster() {
+		return monster;
+	}
+
+	public void setMonster(Monster monster) {
+		this.monster = monster;
+	}
+
+
+
+}
+</file>
+
+<file path="game/src/inventory/Equipment.java">
+package inventory;
+
+import java.util.ArrayList;
+
+public class Equipment {
+	
+	private Weapon equippedWeapon;
+	private final int DAMAGEUSEITEM = 1;
+	public ArrayList<Weapon> combatGear;
+
+	public Equipment() {
+		combatGear = new ArrayList<>();
+		standardEquipment();
+	}
+
+
+	public void addWeapon(Weapon weapon) {
+		if(combatGear.size()<3) {
+			combatGear.add(weapon);
+		}	
+	}
+	
+	public void displayCombatGear() {
+		    System.out.println("\n=================== 🎒 DEIN KAMPF-INVENTAR ===================");
+		    
+		    // Tabellen-Kopfzeile mit fester Spaltenbreite:
+		    // %-3s  = Index (3 Zeichen Platz, linksbündig)
+		    // %-12s = Name (12 Zeichen Platz)
+		    // %-12s = Haltbarkeit (12 Zeichen Platz)
+		    // %-10s = Schaden (10 Zeichen Platz)
+		    // %-10s = Typ
+		    System.out.printf("   %-3s | %-12s | %-12s | %-10s | %-10s\n", "Nr.", "Weapon", "Durability", "Attack", "Typ");
+		    System.out.println("------------------------------------------------------------");
+
+		    // Alle Waffen aus der Liste durchlaufen
+		    for (int i = 0; i < combatGear.size(); i++) {
+		        Weapon w = combatGear.get(i);
+		        
+		        // Die Haltbarkeit hübsch formatieren (z.B. 498/500)
+		        String durString = w.getDurability() + "/500"; 
+
+		        // Die Zeile für jede Waffe ausgeben
+		        System.out.printf("   [%d] | %-12s | %-12s | +%-9d | %-10s\n", 
+		            i, 
+		            w.getName(), 
+		            durString, 
+		            w.getAttack(), 
+		            w.getType()
+		        );
+		    }
+		    System.out.println("============================================================\n");
+		
+		
+		
+	}
+	
+	public void damageCombatItem() {
+		if(this.geteEuippedWeapon() != null) {
+		this.getEquippedWeapon().damageDurability(DAMAGEUSEITEM);
+		}
+	}
+	
+	public void standardEquipment() {
+		Weapon weapon = new Weapon("Sword", 1, 100, 5, "Melee");
+		this.combatGear.add(weapon);
+		this.equipWeapon(weapon);
+	}
+	
+	public void equipWeapon(Weapon weapon) {
+	    if (combatGear.contains(weapon)) {
+	        this.equippedWeapon = weapon;
+	    }
+	}
+	
+	public Weapon getEquippedWeapon() {
+	    return this.equippedWeapon; 
+	}
+	
+	public String getEquippedWeaponName() {
+	    return (equippedWeapon != null) ? equippedWeapon.getName() : "Keine Waffe";
+	}
+	
+	public void showEquippedWeapon() {
+	    System.out.println(getEquippedWeaponName());
+	}
+	
+	public int getIndexCombatGear(String name) {
+		if(name == null || name.isBlank()) {
+			throw new IllegalArgumentException("Weapon name can not be empty!");
+		}
+		for (int i = 0; i < combatGear.size(); i++) {
+	        Weapon w = combatGear.get(i);
+	        if (w.getName().equalsIgnoreCase(name)) {
+	            return i;               // Treffer → Index zurückgeben
+	        }
+	    }
+	    return -1;                      // kein Treffer
+	}
+	
+	public void equipWeaponByIndex(int idx) {
+	    // Sicherheit geht vor: Prüfen, ob der Index in der Liste existiert
+	    if (idx >= 0 && idx < this.combatGear.size()) {
+	        Weapon w = this.combatGear.get(idx);
+	        
+	        // Hier rufst du deine bestehende Logik auf, 
+	        // die die Waffe letztendlich als "aktiv" setzt
+	        this.equipWeapon(w); 
+	        
+	        System.out.println("⚔️ " + w.getName() + " was successfully equipped!");
+	    } else {
+	        System.out.println("❌ Invalid Index! Weapon could not been equipped!.");
+	    }
+	}
+	
+	public Weapon geteEuippedWeapon() {
+		return this.equippedWeapon;
+	}
+		
+		
+
+}
+</file>
+
+<file path="game/src/persistence/SaveGameManager.java">
+package persistence;
+
+import java.io.FileReader;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import character.Player;
+
+public class SaveGameManager {
+
+    private final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
+
+    private final String fileName = "savegame.json";
+
+    public void savePlayer(Player player) {
+        try (FileWriter writer = new FileWriter(fileName)) {
+            gson.toJson(player, writer);
+            System.out.println("💾 Spielstand erfolgreich in '" + fileName + "' gespeichert!");
+        } catch (IOException e) {
+            System.err.println("❌ Fehler beim Speichern: " + e.getMessage());
+        }
+    }
+
+    public Player loadPlayer() {
+        try (FileReader reader = new FileReader(fileName)) {
+            Player loaded = gson.fromJson(reader, Player.class);
+            System.out.println("📂 Spielstand erfolgreich geladen!");
+            return loaded;
+        } catch (IOException e) {
+            System.out.println("ℹ️ Kein Spielstand gefunden. Ein neuer Charakter wird erstellt.");
+            return null;
+        }
+    }
+}
+</file>
+
+<file path="game/.classpath">
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/dani/eclipse-workspace/game/game/lib/gson-2.11.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
+</file>
+
+<file path="game/.settings/org.eclipse.jdt.core.prefs">
+eclipse.preferences.version=1
+org.eclipse.jdt.core.compiler.codegen.methodParameters=do not generate
+org.eclipse.jdt.core.compiler.codegen.targetPlatform=17
+org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve
+org.eclipse.jdt.core.compiler.compliance=17
+org.eclipse.jdt.core.compiler.debug.lineNumber=generate
+org.eclipse.jdt.core.compiler.debug.localVariable=generate
+org.eclipse.jdt.core.compiler.debug.sourceFile=generate
+org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
+org.eclipse.jdt.core.compiler.problem.enablePreviewFeatures=disabled
+org.eclipse.jdt.core.compiler.problem.enumIdentifier=error
+org.eclipse.jdt.core.compiler.problem.reportPreviewFeatures=warning
+org.eclipse.jdt.core.compiler.release=enabled
+org.eclipse.jdt.core.compiler.source=17
+</file>
+
+<file path="game/src/combat/CombatView.java">
+package combat;
+
+import java.util.Scanner;
+
+import inventory.Equipment;
+import inventory.Weapon;
+
+public class CombatView {
+
+	private CombatEngine engine;
+	private Scanner scanner = new Scanner(System.in);
+	
+	public CombatView(CombatEngine engine) {
+		this.engine = engine;
+	}
+	
+	public void startBattle() {
+		System.out.println("Kampf beginnt " + engine.getPlayer().getName() + " vs " + engine.getMonster().getName()); 
+		
+		while(!engine.isBattleOver()) {
+			
+			this.printStatusDashboard();
+			
+			if(engine.isPlayerTurn()) {
+				handlePlayerInput();
+			}
+			else {
+				handleMonsterTurn();
+			}
+			
+		}
+	this.printStatusDashboard();
+	if(engine.getPlayer().isAlive() == true) {
+		System.out.println("You won!");
+		}
+	else {
+		System.out.println("You lost!");
+		}
+	}
+	
+	
+	
+	
+	public void showDamageAndHealth(String name, int damage, int health) {
+		System.out.println(name +" did " + damage + " damage with his attack!");
+	}
+	
+	public String generateHeathBar(float currentHP, float maxHP) {
+		int barLength = 10;
+		
+		
+		float hpPercentage = (float)currentHP / maxHP;
+		int numFilledBlocks = (int) (hpPercentage*barLength);
+		if(numFilledBlocks < 0) numFilledBlocks = 0;
+		if (numFilledBlocks > barLength) numFilledBlocks = barLength;
+		
+		StringBuilder bar = new StringBuilder();
+		for(int i = 0;i < barLength;i++) {
+			if(i < numFilledBlocks) {
+				bar.append("■");
+			}else {
+				bar.append("□");
+			}
+		}
+		return bar.toString();
+	}
+	
+	private void printStatusDashboard() {
+		System.out.println("\n=================== STATUS ===================");
+		
+		String PlayerBar = this.generateHeathBar(this.getPlayerHP(), this.getPlayerMaxHP());
+		System.out.printf("%-12s HP: [%s] %d/%d\n", this.getPlayerName(), PlayerBar, this.getPlayerHP(), this.getPlayerMaxHP());
+		
+		String MonsterBar = this.generateHeathBar(this.getMonsterHP(), this.getMonsterMaxHP());
+		System.out.printf("%-12s HP: [%s] %d/%d\n", this.getMonsterName(), MonsterBar, this.getMonsterHP(), this.getMonsterMaxHP());
+		
+		System.out.println("==============================================");	
+		
+	}
+	
+	
+	
+	
+	
+	public void handlePlayerInput() {
+			System.out.println("What will you do ? [Attack], [Switch Weapon]");
+			System.out.println(">");
+			String choice = scanner.next().trim().toLowerCase();
+			
+			switch(choice) {
+			case "attack":
+				int damage = engine.executeAttack();
+				this.showDamageAndHealth(getPlayerName(), damage, engine.getMonster().getHealth());
+				Weapon equipped = getEquipment().getEquippedWeapon();
+				if(equipped != null) {
+					System.out.println("Nach Angriff: " + equipped.getName() + " - Durabilty " + equipped.getDurability());
+				}
+				break;
+			
+			case "switch":
+			case "switch weapon":
+				this.handleWeaponSwitch();
+				break;
+				
+				}	
+			}
+	
+	public void handleWeaponSwitch() {
+		System.out.println("\n==============================================");
+	    System.out.println("🔄  Weapon Switch");
+	    System.out.println("----------------------------------------------");
+	    
+	    System.out.println("Current Weapon: [" + this.EquippedWeapon() + "]");
+	    System.out.println("\nWhich Weapon do you want to chosse? (Enter name):");
+	    System.out.println("----------------------------------------------");
+	    
+	    
+	    this.getEquipment().displayCombatGear();
+	    System.out.println("==============================================");
+	    System.out.print("> ");
+	    
+	    scanner.nextLine();
+	    String weaponOfChoice = scanner.next().trim();
+	    
+	    int idx = getEquipment().getIndexCombatGear(weaponOfChoice);
+	    
+	    System.out.println("\n----------------------------------------------");
+	    getEquipment().equipWeaponByIndex(idx);
+	    System.out.println("----------------------------------------------");
+	    
+	    
+	}
+	
+	
+	
+
+	private String getPlayerName() {
+		return engine.getPlayer().getName();
+	}
+	private Equipment getEquipment() {
+		return engine.getPlayer().equipment;
+	}
+	private Weapon EquippedWeapon() {
+		return this.getEquipment().getEquippedWeapon();
+	}
+	private int getPlayerHP() {
+		return engine.getPlayer().getHealth();
+	}
+	private int getPlayerMaxHP() {
+		return engine.getPlayer().getMaxHealth();
+	}
+	private int getMonsterHP() {
+		return engine.getMonster().getHealth();
+	}
+	private int getMonsterMaxHP() {
+		return engine.getMonster().getMaxHealth();
+	}
+	private String getMonsterName() {
+		return engine.getMonster().getName();
+	}
+	
+			
+	public void handleMonsterTurn() {
+		int damage = engine.executeAttack();
+		if(engine.hpPercentage()<0.3) {
+			engine.getMonster().lastStance();
+			System.out.println("FINAL STANCE! MONSTER DAMAGE INCREASED BY 1.2!");
+		}
+		this.showDamageAndHealth(engine.getMonster().getName(), damage, engine.getMonster().getHealth());
+	}
+	
+	
+}
+</file>
+
+<file path="game/src/inventory/Item.java">
+package inventory;
+
+public abstract class Item {
+	
+	private String name;
+	private int quantity;
+	
+	public Item() {}
+	public Item(String name, int quantity) {
+		this.name = name;
+		this.quantity = quantity;
+
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	public void decreaseQuantity() {
+		if(this.quantity > 0 )
+			this.quantity--;
+	}
+	
+
+	public abstract String toString();
+
+}
+</file>
+
+<file path="game/src/character/Monster.java">
+package character;
+
+public abstract class Monster extends Character{
+	
+	private int droppedXP;
+	
+	public Monster(String name, int health, int maxHealth, int strength, int agility,  int droppedXP) {
+		super(name, health, maxHealth, strength, agility);
+		this.setDroppedXP(droppedXP);
+	}
+	
+
+
+
+	@Override
+	public String toString() {
+		return "Name: " + getName() + "\n" +
+				"Health: " + getHealth() + "/" + getMaxHealth() + "\n" +
+				"Strength: " + getStrength() + "\n";
+				
+				
+	}
+
+
+	@Override
+	public int calculateTotalDamage() {
+				return this.getStrength();
+	}
+	public abstract void lastStance();
+	
+
+	public int getDroppedXP() {
+		return droppedXP;
+	}
+
+
+	public void setDroppedXP(int droppedXP) {
+		this.droppedXP = droppedXP;
+	}
+}
+</file>
+
+<file path="game/src/inventory/UseableItem.java">
+package inventory;
+
+public class UseableItem extends Item{
+	
+	private int durability;
+	
+	public UseableItem() {super();}
+	public UseableItem(String name, int quantity, int durability) {
+		super(name, quantity);
+		this.durability = durability;
+	}
+
+	public int getDurability() {
+		return durability;
+	}
+
+	public void setDurability(int durability) {
+		this.durability = durability;
+	}
+	
+	public void damageDurability(int amount) {
+		if(amount > 0) {
+			//throw new IllegalArgumentException("damage amount must be >= 0");
+		}
+		int newDurability = Math.max(0, this.durability - amount);
+		setDurability(newDurability);
+	}
+
+	@Override
+	public String toString() {
+		return "UsableItem: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability();
+	}
+	
+
+	
+}
+</file>
+
+<file path="game/src/inventory/Weapon.java">
+package inventory;
+
+public class Weapon extends UseableItem {
+	private int attack;
+	private String type;
+
+	public Weapon() {super();}
+
+	
+	public Weapon(String name, int quantity, int durability, int attack, String type) {
+		super(name, quantity, durability);
+		this.attack = attack;
+		this.setType(type);
+		
+		
+	}
+	
+
+	public int getAttack() {
+		return attack;
+	}
+
+	public void setAttack(int attack) {
+		this.attack = attack;
+	}
+	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	@Override
+	public String toString() {
+		return "Weapon: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability() + ", Attack: " + this.attack+", Type: " + this.type;
+	}
+
+	
+}
+</file>
+
+<file path="game/src/inventory/Inventory.java">
+package inventory;
+
+import java.util.ArrayList;
+
+public class Inventory {
+	public String showInventory = null;
+	private ArrayList<Item> items;
+	private final int MAX_SPACE = 30;
+	
+	public Inventory() {
+		items = new ArrayList<>();
+	}
+	
+	public boolean hasFreeSpace() {
+		if(this.items.size()<= MAX_SPACE) return true;
+		else return false;
+	}
+	
+	public void addItem(Item item) {
+		if(this.hasFreeSpace() == true) {
+			items.add(item);
+			//System.out.println("Item erfolgreich aufgenommen!");
+		}
+	}	
+	public void useItem(String name) {	
+			for(Item item : items) {
+				if(item.getName().equals(name)) {
+					item.decreaseQuantity();	
+			}
+		}
+	}
+	
+	public Item findItem(String name) {
+		Item m = null;
+		for(Item item : items) {
+			if(item.getName().equals(name)) {
+				//index = items.indexOf(item);
+				m = item;
+			}
+		}
+		//return index;
+		return m;
+	}
+	
+	public void damageItem(String name, int amount) {
+		 Item item = findItem(name);
+		 if(item instanceof UseableItem) {
+			 UseableItem useableitem = (UseableItem) item;
+			 useableitem.damageDurability(amount);
+		 }
+		 
+	}
+	
+	public void deleteItem(String name) {
+		items.remove(findItem(name));
+	}
+	
+	public void displayInventory() {
+		for(Item item : items) {
+			System.out.println(item.toString()); 
+		}
+	}
+}
+</file>
+
+<file path="game/src/character/Character.java">
+package character;
+
+public abstract class Character {
+
+	private final String name;
+	private int health;
+	private final int maxHealth;
+	private boolean alive;
+	private int strength;
+	private int agility;
+
+	public Character(String name, int health, int maxHealth, int strength, int agility) {
+		this.name = name;
+		this.health = health;
+		this.maxHealth = maxHealth;
+		this.setAlive(true);
+		this.setStrength(strength);
+	}
+	
+
+	public void takesDamage(int damage) {
+		health = Math.max(0, health - damage);
+		alive = health > 0;
+	}
+
+	public void heal(int amount) {
+		health = Math.min(maxHealth, health + amount);
+		alive = health > 0;
+	}
+
+	public abstract int calculateTotalDamage();
+
+	public boolean isAlive() {
+		return health > 0;
+	}
+
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+
+	public int getStrength() {
+		return strength;
+	}
+
+	public void setStrength(int strength) {
+		this.strength = strength;
+	}
+
+	public void setAlive(boolean alive) {
+		this.alive = alive;
+	}
+
+	public abstract String toString();
+
+	public int getAgility() {
+		return agility;
+	}
+
+	public void setAgility(int agility) {
+		this.agility = agility;
+	}
+
+}
+</file>
+
+<file path="game/src/character/Player.java">
+package character;
+
+import inventory.Equipment;
+import inventory.Inventory;
+import inventory.Weapon;
+
+public class Player extends Character{
+	
+	public Inventory normalInventory;
+	//public Inventory protectiveGear;	
+	public Equipment equipment;
+	
+	private String race;
+	private int level;
+	private int xp;
+	private int max_xp = 1000;
+	private int gold;
+	
+	public Player(){
+		super("Unbekannter Held", 100, 100, 10, 10);
+		this.normalInventory = new Inventory();
+		this.equipment = new Equipment();
+	}
+	
+	public Player(String name, String race, int health, int maxHealth, int strength, int agility) {
+		super(name, health, maxHealth, strength, agility);
+		this.normalInventory = new Inventory();
+		this.race = race;
+		this.equipment = new Equipment();
+	}
+	
+
+	
+	public void startStatus() {
+		this.level = 1;
+		this.xp = 0;	
+		this.gold = 100;
+		this.normalInventory.displayInventory();
+		
+	}
+	
+	
+
+	
+	public int calculateTotalDamage() {
+		int total = this.getStrength();
+		Weapon w = equipment.getEquippedWeapon();
+		if(w != null) {
+			total += w.getAttack();
+		}
+		return total;
+	}
+	
+	@Override
+	public String toString() {
+		return "Name: " + getName() + "\n" +
+				"Race: " + getRace() + "\n" +
+				"Health: " + getHealth() + "/" + getMaxHealth() + "\n" +
+				"XP: " + this.xp + "/" + this.max_xp + "\n" +
+				"Strength: " + getStrength() + "\n" + 
+				"Level: " + this.level + "\n" +
+				"Gold: " + this.gold;
+	}
+	
+	//Funktion zum berechnen vom level
+	public void levelUp(int amount) {
+		this.xp += amount;
+		while(this.xp>this.max_xp) {
+		if(xp>=max_xp) {
+			this.xp = this.xp - this.max_xp;
+			this.max_xp = this.max_xp * 2;
+			this.level ++;
+			}
+		}
+	}
+	
+	
+	public int getLevel() {
+		return level;
+	}
+
+
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+
+
+	public int getXp() {
+		return xp;
+	}
+
+
+
+	public void setXp(int xp) {
+		this.xp = xp;
+	}
+
+
+
+	public int getGold() {
+		return gold;
+	}
+
+
+
+	public void setGold(int gold) {
+		this.gold = gold;
+	}
+
+	public String getRace() {
+		return race;
+	}
+
+	public void setRace(String race) {
+		this.race = race;
+	}
+
+}
+</file>
+
+<file path="game/src/inventory/Demo.java">
+package inventory;
+
+import character.Goblin;
+
+import character.Player;
+import combat.CombatEngine;
+import combat.CombatView;
+import persistence.SaveGameManager;
+
+
+public class Demo {
+	public static void main(String[] args) {
+		
+		SaveGameManager saveManager = new SaveGameManager();
+		
+		
+		Player player1 = saveManager.loadPlayer();
+
+		
+		if(player1 == null) {
+			
+			player1 = new Player("destroyer", "Elf", 75, 100, 10, 2);
+		}
+		
+		
+		player1.startStatus();
+		
+		Weapon weapon2 = new Weapon("Bow", 100, 500, 5, "Long Range");
+		player1.equipment.addWeapon(weapon2);
+		
+	
+		
+		
+		Goblin goblin1 = new Goblin("Goblin", 50, 60, 10, 3, 100);
+		player1.equipment.equipWeapon(weapon2);
+		CombatEngine battle1 = new CombatEngine(player1, goblin1);
+	
+		
+		CombatView view1 = new CombatView(battle1);
+		view1.startBattle();
+		
+		System.out.println("--- STARTE TEST-SPEICHERUNG ---");
+		saveManager.savePlayer(player1);
+		System.out.println("--- TEST-SPEICHERUNG FERTIG ---");
+		
+		
+		
+		
+		
+		
+		
+	}
+}
+</file>
+
+</files>

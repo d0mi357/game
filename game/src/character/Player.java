@@ -65,7 +65,8 @@ public class Player extends Character{
 	//Funktion zum berechnen vom level
 	public void levelUp(int amount) {
 		this.xp += amount;
-		while(this.xp>this.max_xp) {
+		
+		while(this.xp>=this.max_xp) {
 		if(xp>=max_xp) {
 			this.xp = this.xp - this.max_xp;
 			this.max_xp = this.max_xp * 2;

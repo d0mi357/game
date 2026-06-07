@@ -11,6 +11,7 @@ public class Goblin extends Monster{
 		if(this.getStrength()<30) {
 			setStrength((int) (getStrength()*1.2));
 		}
+		
 	 
 		
 	}

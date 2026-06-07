@@ -55,12 +55,15 @@ public class Equipment {
 	}
 	
 	public void damageCombatItem() {
+		if(this.geteEuippedWeapon() != null) {
 		this.getEquippedWeapon().damageDurability(DAMAGEUSEITEM);
+		}
 	}
 	
 	public void standardEquipment() {
 		Weapon weapon = new Weapon("Sword", 1, 100, 5, "Melee");
 		this.combatGear.add(weapon);
+		this.equipWeapon(weapon);
 	}
 	
 	public void equipWeapon(Weapon weapon) {

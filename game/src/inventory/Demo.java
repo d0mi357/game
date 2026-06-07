@@ -34,7 +34,7 @@ public class Demo {
 		Goblin goblin1 = new Goblin("Goblin", 50, 60, 10, 3, 100);
 		player1.equipment.equipWeapon(weapon2);
 		CombatEngine battle1 = new CombatEngine(player1, goblin1);
-		//battle1.startBattle();
+	
 		
 		CombatView view1 = new CombatView(battle1);
 		view1.startBattle();

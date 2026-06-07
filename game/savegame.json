@@ -4,19 +4,26 @@
     "MAX_SPACE": 30
   },
   "equipment": {
+    "equippedWeapon": {
+      "attack": 5,
+      "type": "Melee",
+      "durability": 93,
+      "name": "Sword",
+      "quantity": 1
+    },
     "DAMAGEUSEITEM": 1,
     "combatGear": [
       {
         "attack": 5,
         "type": "Melee",
-        "durability": 100,
+        "durability": 97,
         "name": "Sword",
         "quantity": 1
       },
       {
         "attack": 5,
         "type": "Long Range",
-        "durability": 500,
+        "durability": 493,
         "name": "Bow",
         "quantity": 100
       },
@@ -31,11 +38,11 @@
   },
   "race": "Elf",
   "level": 1,
-  "xp": 0,
+  "xp": 100,
   "max_xp": 1000,
   "gold": 100,
   "name": "destroyer",
-  "health": 75,
+  "health": 50,
   "maxHealth": 100,
   "alive": true,
   "strength": 10,

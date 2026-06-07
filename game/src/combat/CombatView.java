@@ -30,15 +30,20 @@ public class CombatView {
 			
 		}
 	this.printStatusDashboard();
-	if(engine.getPlayer().isAlive() == true) {
-		System.out.println("You won!");
-		}
-	else {
-		System.out.println("You lost!");
-		}
+	
+	if(engine.getPlayer().isAlive()) {
+	    System.out.println("You won!");
+
+	    int gainedXP = engine.getMonster().getDroppedXP();
+	    engine.getPlayer().levelUp(gainedXP);
+
+	    System.out.println("You gained " + gainedXP + " XP!");
 	}
+	else {
+	    System.out.println("You lost!");
+		}
 	
-	
+	}	
 	
 	
 	public void showDamageAndHealth(String name, int damage, int health) {
@@ -119,6 +124,7 @@ public class CombatView {
 	    System.out.println("==============================================");
 	    System.out.print("> ");
 	    
+	    scanner.nextLine();
 	    String weaponOfChoice = scanner.next().trim();
 	    
 	    int idx = getEquipment().getIndexCombatGear(weaponOfChoice);
