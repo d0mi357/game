@@ -1,5 +1,7 @@
 package character;
 
+import java.util.ArrayList;
+
 import inventory.Equipment;
 import inventory.Inventory;
 import inventory.Weapon;
@@ -9,6 +11,7 @@ public class Player extends Character{
 	public Inventory normalInventory;
 	//public Inventory protectiveGear;	
 	public Equipment equipment;
+	private ArrayList<ActiveEffect> activeEffects = new ArrayList<>();
 	
 	private String race;
 	private int level;
@@ -50,6 +53,29 @@ public class Player extends Character{
 		}
 		return total;
 	}
+	
+	public void addEffect(ActiveEffect effect) {
+		activeEffects.add(effect);
+	}
+	
+	public void applyEffects() {
+		for(int i = activeEffects.size() -1; i >= 0; i--) {
+			ActiveEffect effect = activeEffects.get(i);
+			
+			effect.apply(this);
+			System.out.println(effect.getName() + " heals");
+			
+			if(effect.isFinished()) {
+				activeEffects.remove(i);
+				System.out.println(effect.getName() + " effect ended");
+			}
+		}
+	}
+	
+	
+	
+	
+	
 	
 	@Override
 	public String toString() {

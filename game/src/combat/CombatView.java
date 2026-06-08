@@ -2,7 +2,11 @@ package combat;
 
 import java.util.Scanner;
 
+import character.Monster;
+import character.Player;
 import inventory.Equipment;
+import inventory.HealingPotion;
+import inventory.Item;
 import inventory.Weapon;
 
 public class CombatView {
@@ -83,12 +87,36 @@ public class CombatView {
 		
 	}
 	
+	public void displayStatus() {
+
+	    Player player = engine.getPlayer();
+	    Monster monster = engine.getMonster();
+
+	    System.out.println("=========================================================");
+
+	    System.out.printf("%-30s %-30s%n",
+	            "PLAYER",
+	            "MONSTER");
+
+	    System.out.println("=========================================================");
+
+	    System.out.printf("%-30s %-30s%n",
+	            player.getName(),
+	            monster.getName());
+
+	    System.out.printf("%-30s %-30s%n",
+	            "HP: " + player.getHealth() + "/" + player.getMaxHealth(),
+	            "HP: " + monster.getHealth() + "/" + monster.getMaxHealth());
+
+	    System.out.println("=========================================================");
+	}
+	
 	
 	
 	
 	
 	public void handlePlayerInput() {
-			System.out.println("What will you do ? [Attack], [Switch Weapon]");
+			System.out.println("What will you do ? [Attack], [Switch Weapon], [Potion]");
 			System.out.println(">");
 			String choice = scanner.next().trim().toLowerCase();
 			
@@ -107,8 +135,12 @@ public class CombatView {
 				this.handleWeaponSwitch();
 				break;
 				
-				}	
+					
+			case "potion":
+				this.handlePotionUse();
+				break;
 			}
+	}
 	
 	public void handleWeaponSwitch() {
 		System.out.println("\n==============================================");
@@ -134,6 +166,28 @@ public class CombatView {
 	    System.out.println("----------------------------------------------");
 	    
 	    
+	}
+	
+	public void handlePotionUse() {
+		System.out.println("Which Potion do you want to use?");
+		scanner.nextLine();
+		String potionName = scanner.nextLine();
+		
+		Item item = engine.getPlayer().normalInventory.findItem(potionName);
+		
+		if(item instanceof HealingPotion) {
+			HealingPotion potion = (HealingPotion) item;
+			potion.use(engine.getPlayer());
+			
+			if(potion.getQuantity() == 0) {
+				engine.getPlayer().normalInventory.deleteItem(potion.getName());
+			}
+			
+			engine.setPlayerTurn(false);		
+		}
+		else {
+			System.out.println("Potion with this name not found!");
+		}
 	}
 	
 	

@@ -23,6 +23,7 @@ public class CombatEngine{
 		int damage = 0;
 		
 			if(isPlayerTurn) {
+				player.applyEffects();
 				damage = player.calculateTotalDamage();
 				monster.takesDamage(damage);
 				player.equipment.damageCombatItem();

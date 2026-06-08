@@ -1,13 +1,20 @@
 {
   "normalInventory": {
-    "items": [],
+    "items": [
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 2
+      }
+    ],
     "MAX_SPACE": 30
   },
   "equipment": {
     "equippedWeapon": {
       "attack": 5,
       "type": "Melee",
-      "durability": 80,
+      "durability": 70,
       "name": "Sword",
       "quantity": 1
     },
@@ -29,9 +36,10 @@
       }
     ]
   },
+  "activeEffects": [],
   "race": "Human",
   "level": 1,
-  "xp": 200,
+  "xp": 300,
   "max_xp": 1000,
   "gold": 100,
   "name": "sleepycap",
