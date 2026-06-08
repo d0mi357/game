@@ -6,26 +6,19 @@
   "equipment": {
     "equippedWeapon": {
       "attack": 5,
-      "type": "Long Range",
-      "durability": 489,
-      "name": "Bow",
-      "quantity": 100
+      "type": "Melee",
+      "durability": 80,
+      "name": "Sword",
+      "quantity": 1
     },
     "DAMAGEUSEITEM": 1,
     "combatGear": [
       {
         "attack": 5,
         "type": "Melee",
-        "durability": 97,
+        "durability": 91,
         "name": "Sword",
         "quantity": 1
-      },
-      {
-        "attack": 5,
-        "type": "Long Range",
-        "durability": 489,
-        "name": "Bow",
-        "quantity": 100
       },
       {
         "attack": 5,
@@ -36,15 +29,15 @@
       }
     ]
   },
-  "race": "Elf",
+  "race": "Human",
   "level": 1,
-  "xp": 100,
+  "xp": 200,
   "max_xp": 1000,
   "gold": 100,
-  "name": "destroyer",
-  "health": 50,
+  "name": "sleepycap",
+  "health": 0,
   "maxHealth": 100,
-  "alive": true,
+  "alive": false,
   "strength": 10,
-  "agility": 0
+  "agility": 5
 }

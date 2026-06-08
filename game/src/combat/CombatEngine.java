@@ -32,7 +32,13 @@ public class CombatEngine{
 					monster.lastStance();
 				}
 				damage = monster.calculateTotalDamage();
+				if(player.canDodge()) {
+					System.out.println(player.getName() + " dodged the attack!");
+					damage = 0;
+				}
+				else {
 				player.takesDamage(damage);
+					}
 				}
 			isPlayerTurn = !isPlayerTurn;
 			return damage;

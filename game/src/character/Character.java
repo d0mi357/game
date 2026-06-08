@@ -1,5 +1,7 @@
 package character;
 
+import java.util.Random;
+
 public abstract class Character {
 
 	private final String name;
@@ -8,6 +10,8 @@ public abstract class Character {
 	private boolean alive;
 	private int strength;
 	private int agility;
+	
+	private static final Random random = new Random();
 
 	public Character(String name, int health, int maxHealth, int strength, int agility) {
 		this.name = name;
@@ -15,6 +19,7 @@ public abstract class Character {
 		this.maxHealth = maxHealth;
 		this.setAlive(true);
 		this.setStrength(strength);
+		this.agility = agility;
 	}
 	
 
@@ -27,6 +32,14 @@ public abstract class Character {
 		health = Math.min(maxHealth, health + amount);
 		alive = health > 0;
 	}
+	
+	public boolean canDodge() {
+		int dodgeChance = Math.min(this.getAgility()*5, 50);
+		int roll = random.nextInt(100);
+		return roll < dodgeChance;
+	}
+	
+	
 
 	public abstract int calculateTotalDamage();
 

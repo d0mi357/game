@@ -6,6 +6,8 @@ import character.Player;
 import character.PlayerCreator;
 import combat.CombatEngine;
 import combat.CombatView;
+import dungeon.Dungeon;
+import dungeon.Floor;
 import persistence.SaveGameManager;
 
 
@@ -23,10 +25,11 @@ public class Demo {
 			//player1 = new Player("destroyer", "Elf", 75, 100, 10, 2);
 			PlayerCreator playercreator = new PlayerCreator();
 			player1 = playercreator.createPlayer();
+			player1.startStatus();
 		}
 		
 		
-		player1.startStatus();
+		
 		
 		if(player1.equipment.getIndexCombatGear("Bow") == -1) {
 			Weapon weapon2 = new Weapon("Bow", 100, 500, 5, "Long Range");
@@ -40,8 +43,12 @@ public class Demo {
 		CombatEngine battle1 = new CombatEngine(player1, goblin1);
 	
 		
-		CombatView view1 = new CombatView(battle1);
-		view1.startBattle();
+		Dungeon dungeon = new Dungeon();
+		
+		dungeon.addFloors(new Floor(1, goblin1));
+		dungeon.addFloors(new Floor(2, new Goblin("Boss Goblin", 120, 120, 20, 5, 500)));
+		
+		dungeon.startDungeon(player1);
 		
 		System.out.println("--- STARTE TEST-SPEICHERUNG ---");
 		saveManager.savePlayer(player1);
