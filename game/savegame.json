@@ -6,10 +6,10 @@
   "equipment": {
     "equippedWeapon": {
       "attack": 5,
-      "type": "Melee",
-      "durability": 93,
-      "name": "Sword",
-      "quantity": 1
+      "type": "Long Range",
+      "durability": 489,
+      "name": "Bow",
+      "quantity": 100
     },
     "DAMAGEUSEITEM": 1,
     "combatGear": [
@@ -23,7 +23,7 @@
       {
         "attack": 5,
         "type": "Long Range",
-        "durability": 493,
+        "durability": 489,
         "name": "Bow",
         "quantity": 100
       },
