@@ -23,7 +23,7 @@ public class CombatView {
 		
 		while(!engine.isBattleOver()) {
 			
-			this.printStatusDashboard();
+			this.displayStatus();
 			
 			if(engine.isPlayerTurn()) {
 				handlePlayerInput();
@@ -116,30 +116,39 @@ public class CombatView {
 	
 	
 	public void handlePlayerInput() {
-			System.out.println("What will you do ? [Attack], [Switch Weapon], [Potion]");
+			System.out.println("===== ACTION MENU =====");
+			System.out.println("1. Attack");
+			System.out.println("2. Switch Weapon");
+			System.out.println("3. Use Item");
 			System.out.println(">");
-			String choice = scanner.next().trim().toLowerCase();
 			
-			switch(choice) {
-			case "attack":
-				int damage = engine.executeAttack();
-				this.showDamageAndHealth(getPlayerName(), damage, engine.getMonster().getHealth());
-				Weapon equipped = getEquipment().getEquippedWeapon();
-				if(equipped != null) {
-					System.out.println("Nach Angriff: " + equipped.getName() + " - Durabilty " + equipped.getDurability());
-				}
-				break;
+			try {
 			
-			case "switch":
-			case "switch weapon":
-				this.handleWeaponSwitch();
-				break;
-				
+				int choice = Integer.parseInt(scanner.nextLine());
+			
+				switch(choice) {
+				case 1:
+					int damage = engine.executeAttack();
+					this.showDamageAndHealth(getPlayerName(), damage, engine.getMonster().getHealth());
+					Weapon equipped = getEquipment().getEquippedWeapon();
+					if(equipped != null) {
+						System.out.println("Nach Angriff: " + equipped.getName() + " - Durabilty " + equipped.getDurability());
+					}
+					break;
+			
+				case 2:
+					this.handleWeaponSwitch();
+					break;
 					
-			case "potion":
-				this.handlePotionUse();
-				break;
-			}
+				case 3:
+					this.handlePotionUse();
+					break;
+				default:
+					System.out.println("Please enter a number between 1 and 3.");
+				}
+			}catch(NumberFormatException e) {
+			System.out.println("Please enter a valid number");
+		}
 	}
 	
 	public void handleWeaponSwitch() {
@@ -148,7 +157,7 @@ public class CombatView {
 	    System.out.println("----------------------------------------------");
 	    
 	    System.out.println("Current Weapon: [" + this.EquippedWeapon() + "]");
-	    System.out.println("\nWhich Weapon do you want to chosse? (Enter name):");
+	    System.out.println("\nWhich Weapon do you want to chosse? (Enter a number):");
 	    System.out.println("----------------------------------------------");
 	    
 	    
@@ -156,31 +165,33 @@ public class CombatView {
 	    System.out.println("==============================================");
 	    System.out.print("> ");
 	    
-	    scanner.nextLine();
-	    String weaponOfChoice = scanner.next().trim();
+	    try {
+	    	int weaponOfChoice = Integer.parseInt(scanner.nextLine());
 	    
-	    int idx = getEquipment().getIndexCombatGear(weaponOfChoice);
-	    
-	    System.out.println("\n----------------------------------------------");
-	    getEquipment().equipWeaponByIndex(idx);
-	    System.out.println("----------------------------------------------");
+	    		System.out.println("\n----------------------------------------------");
+	    		getEquipment().equipWeaponByIndex(weaponOfChoice-1);
+	    		System.out.println("----------------------------------------------");
+	    		
+	    }catch(NumberFormatException e) {
+	    	System.out.println("Please enter a valid number.");
+	    }
 	    
 	    
 	}
 	
 	public void handlePotionUse() {
 		System.out.println("Which Potion do you want to use?");
-		scanner.nextLine();
+		engine.getPlayer().getInventory().displayInventory();
+		
 		String potionName = scanner.nextLine();
 		
 		Item item = engine.getPlayer().normalInventory.findItem(potionName);
 		
-		if(item instanceof HealingPotion) {
-			HealingPotion potion = (HealingPotion) item;
-			potion.use(engine.getPlayer());
+		if(item != null) {
+	        item.use(engine.getPlayer());
 			
-			if(potion.getQuantity() == 0) {
-				engine.getPlayer().normalInventory.deleteItem(potion.getName());
+			if(item.getQuantity() == 0) {
+				engine.getPlayer().normalInventory.deleteItem(item.getName());
 			}
 			
 			engine.setPlayerTurn(false);		

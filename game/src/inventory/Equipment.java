@@ -41,7 +41,7 @@ public class Equipment {
 
 		        // Die Zeile für jede Waffe ausgeben
 		        System.out.printf("   [%d] | %-12s | %-12s | +%-9d | %-10s\n", 
-		            i, 
+		            i+1, 
 		            w.getName(), 
 		            durString, 
 		            w.getAttack(), 

@@ -33,7 +33,7 @@ public class Inventory {
 	public Item findItem(String name) {
 		Item m = null;
 		for(Item item : items) {
-			if(item.getName().equals(name)) {
+			if(item.getName().equalsIgnoreCase(name)) {
 				//index = items.indexOf(item);
 				m = item;
 			}
@@ -55,9 +55,19 @@ public class Inventory {
 		items.remove(findItem(name));
 	}
 	
+	
 	public void displayInventory() {
-		for(Item item : items) {
-			System.out.println(item.toString()); 
+		
+		 System.out.println("\n========== INVENTORY ==========");
+
+		    for(Item item : items) {
+		        System.out.println(item);
+		    }
+
+		    System.out.println("===============================");
+		
 		}
+		
+		
 	}
-}
+

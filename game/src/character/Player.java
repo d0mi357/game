@@ -11,7 +11,7 @@ public class Player extends Character{
 	public Inventory normalInventory;
 	//public Inventory protectiveGear;	
 	public Equipment equipment;
-	private ArrayList<ActiveEffect> activeEffects = new ArrayList<>();
+	private transient ArrayList<ActiveEffect> activeEffects = new ArrayList<>();
 	
 	private String race;
 	private int level;
@@ -142,6 +142,10 @@ public class Player extends Character{
 
 	public void setRace(String race) {
 		this.race = race;
+	}
+	
+	public Inventory getInventory() {
+		return this.normalInventory;
 	}
 
 }

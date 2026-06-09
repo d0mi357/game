@@ -1,6 +1,8 @@
 package inventory;
 
-public abstract class Item {
+import character.Player;
+
+public class Item {
 	
 	private String name;
 	private int quantity;
@@ -32,7 +34,14 @@ public abstract class Item {
 			this.quantity--;
 	}
 	
-
-	public abstract String toString();
+	
+	@Override
+	public String toString() {
+	    return name + " x" + quantity;
+	}
+	
+	public void use(Player player) {
+		System.out.println(this.name + " cannot be used.");
+	}
 
 }

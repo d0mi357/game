@@ -1,20 +1,13 @@
 {
   "normalInventory": {
-    "items": [
-      {
-        "duration": 3,
-        "healPerTurn": 10,
-        "name": "Small Healing Potion",
-        "quantity": 2
-      }
-    ],
+    "items": [],
     "MAX_SPACE": 30
   },
   "equipment": {
     "equippedWeapon": {
       "attack": 5,
       "type": "Melee",
-      "durability": 70,
+      "durability": 81,
       "name": "Sword",
       "quantity": 1
     },
@@ -23,7 +16,7 @@
       {
         "attack": 5,
         "type": "Melee",
-        "durability": 91,
+        "durability": 89,
         "name": "Sword",
         "quantity": 1
       },
@@ -36,13 +29,12 @@
       }
     ]
   },
-  "activeEffects": [],
   "race": "Human",
   "level": 1,
-  "xp": 300,
+  "xp": 200,
   "max_xp": 1000,
   "gold": 100,
-  "name": "sleepycap",
+  "name": "domi",
   "health": 0,
   "maxHealth": 100,
   "alive": false,

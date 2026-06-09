@@ -6,6 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/dani/eclipse-workspace/game/game/lib/gson-2.11.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/irina/eclipse-workspace/game/game/lib/gson-2.11.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

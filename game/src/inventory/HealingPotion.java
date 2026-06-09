@@ -14,6 +14,7 @@ public class HealingPotion extends Item{
 		this.healPerTurn = healPerTurn;
 	}
 	
+	@Override
 	public void use(Player player) {
 		if(getQuantity() <= 0) {
 			System.out.println("No more Potions available");

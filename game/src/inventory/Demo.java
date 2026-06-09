@@ -26,6 +26,10 @@ public class Demo {
 			PlayerCreator playercreator = new PlayerCreator();
 			player1 = playercreator.createPlayer();
 			player1.startStatus();
+			
+			HealingPotion potion = new HealingPotion("Small Healing Potion", 3, 3, 10);
+			player1.normalInventory.addItem(potion);
+			
 		}
 		
 		
@@ -39,11 +43,7 @@ public class Demo {
 		
 		
 		Goblin goblin1 = new Goblin("Goblin", 50, 60, 10, 3, 100);
-		//player1.equipment.equipWeapon(weapon2);
-		CombatEngine battle1 = new CombatEngine(player1, goblin1);
-		HealingPotion potion = new HealingPotion("Small Healing Potion", 3, 3, 10);
 
-			player1.normalInventory.addItem(potion);
 	
 		
 		Dungeon dungeon = new Dungeon();
