@@ -2,7 +2,7 @@ package inventory;
 
 import character.Player;
 
-public class Item {
+public abstract class Item {
 	
 	private String name;
 	private int quantity;

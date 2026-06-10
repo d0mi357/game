@@ -1,13 +1,21 @@
 {
   "normalInventory": {
-    "items": [],
+    "items": [
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 2,
+        "type": "healingPotion"
+      }
+    ],
     "MAX_SPACE": 30
   },
   "equipment": {
     "equippedWeapon": {
       "attack": 5,
-      "type": "Melee",
-      "durability": 81,
+      "type": "weapon",
+      "durability": 93,
       "name": "Sword",
       "quantity": 1
     },
@@ -15,14 +23,14 @@
     "combatGear": [
       {
         "attack": 5,
-        "type": "Melee",
-        "durability": 89,
+        "type": "weapon",
+        "durability": 93,
         "name": "Sword",
         "quantity": 1
       },
       {
         "attack": 5,
-        "type": "Long Range",
+        "type": "weapon",
         "durability": 500,
         "name": "Bow",
         "quantity": 100
@@ -31,7 +39,7 @@
   },
   "race": "Human",
   "level": 1,
-  "xp": 200,
+  "xp": 100,
   "max_xp": 1000,
   "gold": 100,
   "name": "domi",

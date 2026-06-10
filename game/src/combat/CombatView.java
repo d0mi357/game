@@ -42,6 +42,12 @@ public class CombatView {
 	    engine.getPlayer().levelUp(gainedXP);
 
 	    System.out.println("You gained " + gainedXP + " XP!");
+	    
+	    for(Item item : engine.getMonster().getDroppedItems()) {
+	    	engine.getPlayer().getInventory().addItem(item);
+	    	
+	    	System.out.println("Loaded: " + item.getName());
+	    }
 	}
 	else {
 	    System.out.println("You lost!");
@@ -180,26 +186,34 @@ public class CombatView {
 	}
 	
 	public void handlePotionUse() {
-		System.out.println("Which Potion do you want to use?");
 		engine.getPlayer().getInventory().displayInventory();
+		System.out.println("Which Potion do you want to use?");
+		System.out.println(">");
 		
-		String potionName = scanner.nextLine();
+		try {
 		
-		Item item = engine.getPlayer().normalInventory.findItem(potionName);
+			int choice = Integer.parseInt(scanner.nextLine());
 		
-		if(item != null) {
-	        item.use(engine.getPlayer());
+			Item item = engine.getPlayer().normalInventory.getItemByIndex(choice-1);
+		
+			if(item != null) {
+				System.out.println("DEBUG item class: " + item.getClass().getName());
+				item.use(engine.getPlayer());
 			
-			if(item.getQuantity() == 0) {
-				engine.getPlayer().normalInventory.deleteItem(item.getName());
+				if(item.getQuantity() == 0) {
+					engine.getPlayer().normalInventory.deleteItem(item.getName());
+				}
+			
+				engine.setPlayerTurn(false);		
 			}
-			
-			engine.setPlayerTurn(false);		
-		}
-		else {
-			System.out.println("Potion with this name not found!");
+			else {
+				System.out.println("Potion with this name not found!");
+			}
+		}catch(NumberFormatException e) {
+			System.out.println("Please enter a valid number. ");
 		}
 	}
+	
 	
 	
 	

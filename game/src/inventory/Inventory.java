@@ -42,6 +42,15 @@ public class Inventory {
 		return m;
 	}
 	
+	public Item getItemByIndex(int idx) {
+
+	    if(idx >= 0 && idx < items.size()) {
+	        return items.get(idx);
+	    }
+
+	    return null;
+	}
+	
 	public void damageItem(String name, int amount) {
 		 Item item = findItem(name);
 		 if(item instanceof UseableItem) {
@@ -57,16 +66,20 @@ public class Inventory {
 	
 	
 	public void displayInventory() {
-		
-		 System.out.println("\n========== INVENTORY ==========");
 
-		    for(Item item : items) {
-		        System.out.println(item);
-		    }
+	    System.out.println("\n========= INVENTORY =========");
 
-		    System.out.println("===============================");
-		
-		}
+	    for(int i = 0; i < items.size(); i++) {
+	        Item item = items.get(i);
+
+	        System.out.printf("[%d] %-20s x%d%n",
+	                i + 1,
+	                item.getName(),
+	                item.getQuantity());
+	    }
+
+	    System.out.println("=============================");
+	}
 		
 		
 	}
