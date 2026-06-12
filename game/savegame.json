@@ -1,21 +1,13 @@
 {
   "normalInventory": {
-    "items": [
-      {
-        "duration": 3,
-        "healPerTurn": 10,
-        "name": "Small Healing Potion",
-        "quantity": 2,
-        "type": "healingPotion"
-      }
-    ],
+    "items": [],
     "MAX_SPACE": 30
   },
   "equipment": {
     "equippedWeapon": {
       "attack": 5,
       "type": "weapon",
-      "durability": 93,
+      "durability": 90,
       "name": "Sword",
       "quantity": 1
     },
@@ -24,7 +16,7 @@
       {
         "attack": 5,
         "type": "weapon",
-        "durability": 93,
+        "durability": 90,
         "name": "Sword",
         "quantity": 1
       },

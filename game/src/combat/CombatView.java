@@ -197,11 +197,11 @@ public class CombatView {
 			Item item = engine.getPlayer().normalInventory.getItemByIndex(choice-1);
 		
 			if(item != null) {
-				System.out.println("DEBUG item class: " + item.getClass().getName());
+				//System.out.println("DEBUG item class: " + item.getClass().getName());
 				item.use(engine.getPlayer());
 			
 				if(item.getQuantity() == 0) {
-					engine.getPlayer().normalInventory.deleteItem(item.getName());
+					engine.getPlayer().normalInventory.deleteItem(item);
 				}
 			
 				engine.setPlayerTurn(false);		

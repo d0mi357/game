@@ -20,8 +20,9 @@ public class HealingPotion extends Item{
 			System.out.println("No more Potions available");
 			return;
 		}
+		player.heal(this.healPerTurn);
 		
-		player.addEffect(new ActiveEffect(getName(), duration, healPerTurn));
+		player.addEffect(new ActiveEffect(getName(), duration - 1, healPerTurn));
 		this.decreaseQuantity();
 		
 		System.out.println("You have used a " + this.getName() + "!");

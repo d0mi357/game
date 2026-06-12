@@ -9,6 +9,7 @@ import combat.CombatView;
 import dungeon.Dungeon;
 import dungeon.Floor;
 import persistence.SaveGameManager;
+import shop.StartPoint;
 
 
 public class Demo {
@@ -31,6 +32,10 @@ public class Demo {
 			player1.normalInventory.addItem(potion);
 			
 		}
+		
+		StartPoint startpoint = new StartPoint();
+		startpoint.enter(player1);
+		saveManager.savePlayer(player1);
 		
 		
 		

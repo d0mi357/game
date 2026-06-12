@@ -60,8 +60,12 @@ public class Inventory {
 		 
 	}
 	
-	public void deleteItem(String name) {
-		items.remove(findItem(name));
+	public void deleteItem(Item item) {
+		items.remove(item);
+	}
+	
+	public void removeEmptyItem() {
+		items.removeIf(item -> item.getQuantity() <= 0);
 	}
 	
 	

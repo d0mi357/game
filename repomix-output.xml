@@ -70,7 +70,11 @@ game/
       UseableItem.java
       Weapon.java
     persistence/
+      RuntimeTypeAdapterFactory.java
       SaveGameManager.java
+    shop/
+      Shop.java
+      StartPoint.java
   .classpath
   .gitignore
   .project
@@ -79,6 +83,52 @@ game/
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="game/src/shop/StartPoint.java">
+package shop;
+
+import java.util.Scanner;
+
+import character.Player;
+
+public class StartPoint {
+	
+	private Scanner scanner = new Scanner(System.in);
+	private Shop shop = new Shop();
+	
+	public void enter(Player player) {
+		
+		boolean running = true;
+		
+		while(running) {
+			System.out.println("\n===== START POINT =====");
+            System.out.println("1. Open Shop");
+            System.out.println("2. Enter Dungeon");
+            System.out.print("> ");
+			
+			int choice = Integer.parseInt(scanner.nextLine());
+			
+			switch(choice) {
+			case 1:
+				shop.open(player);
+				break;
+			case 2:
+				running = false;
+				break;
+			default:
+				System.out.println("Invalid choice");
+				
+			
+			
+			
+			}
+			
+		}
+	}
+	
+
+}
+</file>
 
 <file path="game/.settings/org.eclipse.core.resources.prefs">
 eclipse.preferences.version=1
@@ -264,6 +314,223 @@ public class Fruit extends Item{
 }
 </file>
 
+<file path="game/src/persistence/RuntimeTypeAdapterFactory.java">
+package persistence;
+
+import com.google.gson.*;
+import com.google.gson.internal.Streams;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * Originalquelle: https://github.com/google/gson/blob/master/extras/src/main/java/com/google/gson/typeadapters/RuntimeTypeAdapterFactory.java
+ * Lizenz: Apache License 2.0
+ *
+ * Diese Klasse ermöglicht die Serialisierung und Deserialisierung von polymorphen Typen mit GSON.
+ * Sie speichert die Typinformationen in einem benannten Feld (z. B. "typ") und verwendet diese,
+ * um beim Parsen den richtigen Subtyp zu instanziieren.
+ *
+ * Beispielhafte Anwendung: Serialisieren von Aufgaben und Meilenstein als gemeinsame Oberklasse.
+ *
+ * @param <T> die Basisklasse, von der alle registrierten Subtypen erben
+ */
+
+public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
+    private final Class<?> baseType;
+    private final String typeFieldName;
+    private final Map<String, Class<?>> labelToSubtype = new LinkedHashMap<>();
+    private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<>();
+
+    private RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
+        this.baseType = baseType;
+        this.typeFieldName = typeFieldName;
+    }
+    
+    /**
+     * Erstellt eine neue RuntimeTypeAdapterFactory für eine bestimmte Basisklasse.
+     *
+     * @param baseType       die Oberklasse aller Subtypen
+     * @param typeFieldName  der Feldname, unter dem der Typ im JSON gespeichert wird
+     * @param <T>            generischer Typ der Basisklasse
+     * @return eine neue RuntimeTypeAdapterFactory
+     */
+    
+    public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName) {
+        return new RuntimeTypeAdapterFactory<>(baseType, typeFieldName);
+    }
+    
+    
+    /**
+     * Registriert einen Subtyp mit einem Label, das im JSON verwendet wird.
+     *
+     * @param type  die Subklasse, die serialisiert/deserialisiert werden soll
+     * @param label eindeutiger Bezeichner für den Typ im JSON
+     * @return diese Factory zur weiteren Konfiguration
+     */
+    
+    public RuntimeTypeAdapterFactory<T> registerSubtype(Class<? extends T> type, String label) {
+        labelToSubtype.put(label, type);
+        subtypeToLabel.put(type, label);
+        return this;
+    }
+
+    /**
+     * Erstellt einen TypeAdapter, der zur Verarbeitung der registrierten Subtypen dient.
+     * Diese Methode wird intern von Gson aufgerufen.
+     *
+     * @param gson  Gson-Instanz
+     * @param type  der Typ, für den der Adapter erstellt werden soll
+     * @param <R>   generischer Typ
+     * @return TypeAdapter für polymorphe Typen oder null, wenn nicht zutreffend
+     */
+    
+    @Override
+    public <R> TypeAdapter<R> create(Gson gson, TypeToken<R> type) {
+        if (!baseType.isAssignableFrom(type.getRawType())) return null;
+
+        final Map<String, TypeAdapter<?>> labelToDelegate = new LinkedHashMap<>();
+        final Map<Class<?>, TypeAdapter<?>> subtypeToDelegate = new LinkedHashMap<>();
+        for (Map.Entry<String, Class<?>> entry : labelToSubtype.entrySet()) {
+            TypeAdapter<?> delegate = gson.getDelegateAdapter(this, TypeToken.get(entry.getValue()));
+            labelToDelegate.put(entry.getKey(), delegate);
+            subtypeToDelegate.put(entry.getValue(), delegate);
+        }
+
+        return new TypeAdapter<R>() {
+            
+            /**
+             * Serialisiert das Objekt mit zusätzlichem Typfeld.
+             */
+        	
+            @Override
+            public void write(JsonWriter out, R value) throws IOException {
+                Class<?> srcType = value.getClass();
+                String label = subtypeToLabel.get(srcType);
+                @SuppressWarnings("unchecked")
+                TypeAdapter<R> delegate = (TypeAdapter<R>) subtypeToDelegate.get(srcType);
+                JsonObject jsonObject = delegate.toJsonTree(value).getAsJsonObject();
+                jsonObject.addProperty(typeFieldName, label);
+                Streams.write(jsonObject, out);
+            }
+            	
+            /**
+             * Deserialisiert ein Objekt basierend auf dem Typfeld im JSON.
+             */
+            @Override
+            public R read(JsonReader in) throws IOException {
+                JsonElement jsonElement = Streams.parse(in);
+                JsonObject jsonObject = jsonElement.getAsJsonObject();
+                JsonElement labelJsonElement = jsonObject.remove(typeFieldName);
+                String label = labelJsonElement.getAsString();
+                @SuppressWarnings("unchecked")
+                TypeAdapter<R> delegate = (TypeAdapter<R>) labelToDelegate.get(label);
+                return delegate.fromJsonTree(jsonObject);
+            }
+        };
+    }
+}
+</file>
+
+<file path="game/src/shop/Shop.java">
+package shop;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import character.Player;
+import inventory.HealingPotion;
+import inventory.Item;
+
+public class Shop {
+	
+	private ArrayList<Item> shopItems = new ArrayList<>();
+	private Scanner scanner = new Scanner(System.in);
+	
+	public Shop() {
+		shopItems.add(new HealingPotion("Small Healing Potion", 3, 3, 10));
+	}
+	
+	public void open(Player player) {
+		
+		boolean running = true;
+		while(running) {
+			System.out.println("\n===== SHOP =====");
+            System.out.println("Gold: " + player.getGold());
+            System.out.println("1. Buy Item");
+            System.out.println("2. Sell Item");
+            System.out.println("3. Leave Shop");
+            System.out.print("> ");
+            
+            int choice = Integer.parseInt(scanner.nextLine());
+            
+            switch(choice) {
+            case 1:
+            	this.buyItem(player);
+            	break;
+            case 2:
+            	sellItem(player);
+            	break;
+            case 3:
+            	running = false;
+            	break;
+            default: 
+            	System.out.println("Invalid choice");	
+            }
+		}
+	}
+	
+	private void buyItem(Player player) {
+		
+		System.out.println("\nItems for sale: ");
+		
+		for(int i = 0;i < this.shopItems.size();i++) {
+			System.out.println((i + 1) +". " + this.shopItems.get(i));
+		}
+		
+		System.out.println("> ");
+		
+		int choice = Integer.parseInt(scanner.nextLine()) - 1;
+		
+		if(choice >= 0 && choice < this.shopItems.size()) {
+			Item item = this.shopItems.get(choice);
+			
+			player.normalInventory.addItem(item);
+			System.out.println("Bought: " + item.getName());
+		}
+		
+	}
+	
+	
+	private void sellItem(Player player) {
+		player.normalInventory.displayInventory();
+		
+		System.out.println("Which Item do you want to sell?");
+		System.out.println(">");
+		
+		int itemName = Integer.parseInt(scanner.nextLine());
+		
+		Item item = player.normalInventory.getItemByIndex(itemName -1);
+		
+		if(item != null) {
+			player.normalInventory.deleteItem(item.getName());
+			player.setGold(player.getGold() + 10);
+			
+			System.out.println("Sold: " + item.getName());
+		} else {
+			System.out.println("Item not found");
+		}
+	}	
+		
+	
+	
+}
+</file>
+
 <file path="game/.gitignore">
 /bin/
 </file>
@@ -286,27 +553,6 @@ public class Fruit extends Item{
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 </projectDescription>
-</file>
-
-<file path="game/src/character/Goblin.java">
-package character;
-
-public class Goblin extends Monster{
-	
-	public Goblin(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
-		super(name, health, maxHealth, strength, agility, droppedXP);
-	}
-
-	@Override
-	public void lastStance() {
-		if(this.getStrength()<30) {
-			setStrength((int) (getStrength()*1.2));
-		}
-		
-	 
-		
-	}
-}
 </file>
 
 <file path="game/src/inventory/HealingPotion.java">
@@ -372,87 +618,26 @@ org.eclipse.jdt.core.compiler.release=enabled
 org.eclipse.jdt.core.compiler.source=17
 </file>
 
-<file path="game/src/persistence/SaveGameManager.java">
-package persistence;
-
-import java.io.FileReader;
-
-
-import java.io.FileWriter;
-import java.io.IOException;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import character.Player;
-
-public class SaveGameManager {
-
-    private final Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .create();
-
-    private final String fileName = "savegame.json";	
-
-    public void savePlayer(Player player) {
-        try (FileWriter writer = new FileWriter(fileName)) {
-            gson.toJson(player, writer);
-            System.out.println("💾 Spielstand erfolgreich in '" + fileName + "' gespeichert!");
-        } catch (IOException e) {
-            System.err.println("❌ Fehler beim Speichern: " + e.getMessage());
-        }
-    }
-
-    public Player loadPlayer() {
-        try (FileReader reader = new FileReader(fileName)) {
-            Player loaded = gson.fromJson(reader, Player.class);
-            System.out.println("📂 Spielstand erfolgreich geladen!");
-            return loaded;
-        } catch (IOException e) {
-            System.out.println("ℹ️ Kein Spielstand gefunden. Ein neuer Charakter wird erstellt.");
-            return null;
-        }
-    }
-}
-</file>
-
-<file path="game/src/character/Monster.java">
+<file path="game/src/character/Goblin.java">
 package character;
 
-public abstract class Monster extends Character{
+import inventory.HealingPotion;
+
+public class Goblin extends Monster{
 	
-	private int droppedXP;
-	
-	public Monster(String name, int health, int maxHealth, int strength, int agility,  int droppedXP) {
-		super(name, health, maxHealth, strength, agility);
-		this.setDroppedXP(droppedXP);
+	public Goblin(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
+		super(name, health, maxHealth, strength, agility, droppedXP);
+		addDrop(new HealingPotion("Small Healing Potion",1,3, 10));
 	}
-	
-
-
 
 	@Override
-	public String toString() {
-		return "Name: " + getName() + "\n" +
-				"Health: " + getHealth() + "/" + getMaxHealth() + "\n" +
-				"Strength: " + getStrength() + "\n";
-				
-				
-	}
-
-
-	@Override
-	public int calculateTotalDamage() {
-				return this.getStrength();
-	}
-	public abstract void lastStance();
-	
-
-	public int getDroppedXP() {
-		return droppedXP;
-	}
-
-
-	public void setDroppedXP(int droppedXP) {
-		this.droppedXP = droppedXP;
+	public void lastStance() {
+		if(this.getStrength()<30) {
+			setStrength((int) (getStrength()*1.2));
+		}
+		
+	 
+		
 	}
 }
 </file>
@@ -581,56 +766,6 @@ public class Equipment {
 }
 </file>
 
-<file path="game/src/inventory/Item.java">
-package inventory;
-
-import character.Player;
-
-public class Item {
-	
-	private String name;
-	private int quantity;
-	
-	public Item() {}
-	public Item(String name, int quantity) {
-		this.name = name;
-		this.quantity = quantity;
-
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public int getQuantity() {
-		return quantity;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-	public void decreaseQuantity() {
-		if(this.quantity > 0 )
-			this.quantity--;
-	}
-	
-	
-	@Override
-	public String toString() {
-	    return name + " x" + quantity;
-	}
-	
-	public void use(Player player) {
-		System.out.println(this.name + " cannot be used.");
-	}
-
-}
-</file>
-
 <file path="game/src/inventory/UseableItem.java">
 package inventory;
 
@@ -714,18 +849,117 @@ public class Weapon extends UseableItem {
 }
 </file>
 
-<file path="game/.classpath">
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/dani/eclipse-workspace/game/game/lib/gson-2.11.0.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
+<file path="game/src/persistence/SaveGameManager.java">
+package persistence;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import character.Player;
+import inventory.Fruit;
+import inventory.HealingPotion;
+import inventory.Item;
+import inventory.Weapon;
+import util.RuntimeTypeAdapterFactory;
+
+public class SaveGameManager {
+
+    private final Gson gson;
+    private final String fileName = "savegame.json";
+
+    public SaveGameManager() {
+        RuntimeTypeAdapterFactory<Item> itemAdapter =
+                RuntimeTypeAdapterFactory.of(Item.class, "type")
+                        .registerSubtype(HealingPotion.class, "healingPotion")
+                        .registerSubtype(Fruit.class, "fruit")
+                        .registerSubtype(Weapon.class, "weapon");
+
+        this.gson = new GsonBuilder()
+                .registerTypeAdapterFactory(itemAdapter)
+                .setPrettyPrinting()
+                .create();
+    }
+
+    public void savePlayer(Player player) {
+        try (FileWriter writer = new FileWriter(fileName)) {
+            gson.toJson(player, writer);
+            System.out.println("💾 Spielstand erfolgreich in '" + fileName + "' gespeichert!");
+        } catch (IOException e) {
+            System.err.println("❌ Fehler beim Speichern: " + e.getMessage());
+        }
+    }
+
+    public Player loadPlayer() {
+        try (FileReader reader = new FileReader(fileName)) {
+            Player loaded = gson.fromJson(reader, Player.class);
+            System.out.println("📂 Spielstand erfolgreich geladen!");
+            return loaded;
+        } catch (IOException e) {
+            System.out.println("ℹ️ Kein Spielstand gefunden. Ein neuer Charakter wird erstellt.");
+            return null;
+        }
+    }
+}
+</file>
+
+<file path="game/src/character/Monster.java">
+package character;
+
+import java.util.ArrayList;
+
+import inventory.Item;
+
+public abstract class Monster extends Character{
+	
+	private int droppedXP;
+	private ArrayList<Item> droppedItems;
+	
+	public Monster(String name, int health, int maxHealth, int strength, int agility,  int droppedXP) {
+		super(name, health, maxHealth, strength, agility);
+		this.setDroppedXP(droppedXP);
+		this.droppedItems = new ArrayList<>();
+	}
+	
+
+
+
+	@Override
+	public String toString() {
+		return "Name: " + getName() + "\n" +
+				"Health: " + getHealth() + "/" + getMaxHealth() + "\n" +
+				"Strength: " + getStrength() + "\n";
+				
+				
+	}
+
+
+	@Override
+	public int calculateTotalDamage() {
+				return this.getStrength();
+	}
+	public abstract void lastStance();
+	
+
+	public int getDroppedXP() {
+		return droppedXP;
+	}
+	public void addDrop(Item item) {
+		this.droppedItems.add(item);
+	}
+
+
+	public void setDroppedXP(int droppedXP) {
+		this.droppedXP = droppedXP;
+	}
+	
+	public ArrayList<Item> getDroppedItems(){
+		return droppedItems;
+	}
+}
 </file>
 
 <file path="game/src/combat/CombatEngine.java">
@@ -819,6 +1053,161 @@ public class CombatEngine{
 }
 </file>
 
+<file path="game/src/inventory/Item.java">
+package inventory;
+
+import character.Player;
+
+public abstract class Item {
+	
+	private String name;
+	private int quantity;
+	
+	public Item() {}
+	public Item(String name, int quantity) {
+		this.name = name;
+		this.quantity = quantity;
+
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	public void decreaseQuantity() {
+		if(this.quantity > 0 )
+			this.quantity--;
+	}
+	
+	
+	@Override
+	public String toString() {
+	    return name + " x" + quantity;
+	}
+	
+	public void use(Player player) {
+		System.out.println(this.name + " cannot be used.");
+	}
+
+}
+</file>
+
+<file path="game/.classpath">
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/dani/eclipse-workspace/game/game/lib/gson-2.11.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
+</file>
+
+<file path="game/src/character/Character.java">
+package character;
+
+import java.util.Random;
+
+public abstract class Character {
+
+	private final String name;
+	private int health;
+	private final int maxHealth;
+	private boolean alive;
+	private int strength;
+	private int agility;
+	
+	private static final Random random = new Random();
+
+	public Character(String name, int health, int maxHealth, int strength, int agility) {
+		this.name = name;
+		this.health = health;
+		this.maxHealth = maxHealth;
+		this.setAlive(true);
+		this.setStrength(strength);
+		this.agility = agility;
+	}
+	
+
+	public void takesDamage(int damage) {
+		health = Math.max(0, health - damage);
+		alive = health > 0;
+	}
+
+	public void heal(int amount) {
+		health = Math.min(maxHealth, health + amount);
+		alive = health > 0;
+	}
+	
+	public boolean canDodge() {
+		int dodgeChance = Math.min(this.getAgility()*5, 50);
+		int roll = random.nextInt(100);
+		return roll < dodgeChance;
+	}
+	
+	
+
+	public abstract int calculateTotalDamage();
+
+	public boolean isAlive() {
+		return health > 0;
+	}
+
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getMaxHealth() {
+		return maxHealth;
+	}
+
+	public int getStrength() {
+		return strength;
+	}
+
+	public void setStrength(int strength) {
+		this.strength = strength;
+	}
+
+	public void setAlive(boolean alive) {
+		this.alive = alive;
+	}
+
+	public abstract String toString();
+
+	public int getAgility() {
+		return agility;
+	}
+
+	public void setAgility(int agility) {
+		this.agility = agility;
+	}
+
+}
+</file>
+
 <file path="game/src/combat/CombatView.java">
 package combat;
 
@@ -864,6 +1253,12 @@ public class CombatView {
 	    engine.getPlayer().levelUp(gainedXP);
 
 	    System.out.println("You gained " + gainedXP + " XP!");
+	    
+	    for(Item item : engine.getMonster().getDroppedItems()) {
+	    	engine.getPlayer().getInventory().addItem(item);
+	    	
+	    	System.out.println("Loaded: " + item.getName());
+	    }
 	}
 	else {
 	    System.out.println("You lost!");
@@ -1002,26 +1397,34 @@ public class CombatView {
 	}
 	
 	public void handlePotionUse() {
-		System.out.println("Which Potion do you want to use?");
 		engine.getPlayer().getInventory().displayInventory();
+		System.out.println("Which Potion do you want to use?");
+		System.out.println(">");
 		
-		String potionName = scanner.nextLine();
+		try {
 		
-		Item item = engine.getPlayer().normalInventory.findItem(potionName);
+			int choice = Integer.parseInt(scanner.nextLine());
 		
-		if(item != null) {
-	        item.use(engine.getPlayer());
+			Item item = engine.getPlayer().normalInventory.getItemByIndex(choice-1);
+		
+			if(item != null) {
+				System.out.println("DEBUG item class: " + item.getClass().getName());
+				item.use(engine.getPlayer());
 			
-			if(item.getQuantity() == 0) {
-				engine.getPlayer().normalInventory.deleteItem(item.getName());
+				if(item.getQuantity() == 0) {
+					engine.getPlayer().normalInventory.deleteItem(item.getName());
+				}
+			
+				engine.setPlayerTurn(false);		
 			}
-			
-			engine.setPlayerTurn(false);		
-		}
-		else {
-			System.out.println("Potion with this name not found!");
+			else {
+				System.out.println("Potion with this name not found!");
+			}
+		}catch(NumberFormatException e) {
+			System.out.println("Please enter a valid number. ");
 		}
 	}
+	
 	
 	
 	
@@ -1110,6 +1513,15 @@ public class Inventory {
 		return m;
 	}
 	
+	public Item getItemByIndex(int idx) {
+
+	    if(idx >= 0 && idx < items.size()) {
+	        return items.get(idx);
+	    }
+
+	    return null;
+	}
+	
 	public void damageItem(String name, int amount) {
 		 Item item = findItem(name);
 		 if(item instanceof UseableItem) {
@@ -1125,16 +1537,20 @@ public class Inventory {
 	
 	
 	public void displayInventory() {
-		
-		 System.out.println("\n========== INVENTORY ==========");
 
-		    for(Item item : items) {
-		        System.out.println(item);
-		    }
+	    System.out.println("\n========= INVENTORY =========");
 
-		    System.out.println("===============================");
-		
-		}
+	    for(int i = 0; i < items.size(); i++) {
+	        Item item = items.get(i);
+
+	        System.out.printf("[%d] %-20s x%d%n",
+	                i + 1,
+	                item.getName(),
+	                item.getQuantity());
+	    }
+
+	    System.out.println("=============================");
+	}
 		
 		
 	}
@@ -1143,14 +1559,22 @@ public class Inventory {
 <file path="game/savegame.json">
 {
   "normalInventory": {
-    "items": [],
+    "items": [
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 3,
+        "type": "healingPotion"
+      }
+    ],
     "MAX_SPACE": 30
   },
   "equipment": {
     "equippedWeapon": {
       "attack": 5,
-      "type": "Melee",
-      "durability": 73,
+      "type": "weapon",
+      "durability": 89,
       "name": "Sword",
       "quantity": 1
     },
@@ -1158,15 +1582,15 @@ public class Inventory {
     "combatGear": [
       {
         "attack": 5,
-        "type": "Melee",
+        "type": "weapon",
         "durability": 89,
         "name": "Sword",
         "quantity": 1
       },
       {
         "attack": 5,
-        "type": "Long Range",
-        "durability": 500,
+        "type": "weapon",
+        "durability": 498,
         "name": "Bow",
         "quantity": 100
       }
@@ -1174,106 +1598,15 @@ public class Inventory {
   },
   "race": "Human",
   "level": 1,
-  "xp": 300,
+  "xp": 500,
   "max_xp": 1000,
-  "gold": 100,
+  "gold": 110,
   "name": "domi",
   "health": 0,
   "maxHealth": 100,
   "alive": false,
   "strength": 10,
   "agility": 5
-}
-</file>
-
-<file path="game/src/character/Character.java">
-package character;
-
-import java.util.Random;
-
-public abstract class Character {
-
-	private final String name;
-	private int health;
-	private final int maxHealth;
-	private boolean alive;
-	private int strength;
-	private int agility;
-	
-	private static final Random random = new Random();
-
-	public Character(String name, int health, int maxHealth, int strength, int agility) {
-		this.name = name;
-		this.health = health;
-		this.maxHealth = maxHealth;
-		this.setAlive(true);
-		this.setStrength(strength);
-		this.agility = agility;
-	}
-	
-
-	public void takesDamage(int damage) {
-		health = Math.max(0, health - damage);
-		alive = health > 0;
-	}
-
-	public void heal(int amount) {
-		health = Math.min(maxHealth, health + amount);
-		alive = health > 0;
-	}
-	
-	public boolean canDodge() {
-		int dodgeChance = Math.min(this.getAgility()*5, 50);
-		int roll = random.nextInt(100);
-		return roll < dodgeChance;
-	}
-	
-	
-
-	public abstract int calculateTotalDamage();
-
-	public boolean isAlive() {
-		return health > 0;
-	}
-
-	public int getHealth() {
-		return health;
-	}
-
-	public void setHealth(int health) {
-		this.health = health;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public int getMaxHealth() {
-		return maxHealth;
-	}
-
-	public int getStrength() {
-		return strength;
-	}
-
-	public void setStrength(int strength) {
-		this.strength = strength;
-	}
-
-	public void setAlive(boolean alive) {
-		this.alive = alive;
-	}
-
-	public abstract String toString();
-
-	public int getAgility() {
-		return agility;
-	}
-
-	public void setAgility(int agility) {
-		this.agility = agility;
-	}
-
 }
 </file>
 
@@ -1443,6 +1776,7 @@ import combat.CombatView;
 import dungeon.Dungeon;
 import dungeon.Floor;
 import persistence.SaveGameManager;
+import shop.StartPoint;
 
 
 public class Demo {
@@ -1465,6 +1799,9 @@ public class Demo {
 			player1.normalInventory.addItem(potion);
 			
 		}
+		
+		StartPoint startpoint = new StartPoint();
+		startpoint.enter(player1);
 		
 		
 		
