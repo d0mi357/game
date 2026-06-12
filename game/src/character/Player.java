@@ -16,8 +16,9 @@ public class Player extends Character{
 	private String race;
 	private int level;
 	private int xp;
-	private int max_xp = 1000;
+	private int max_xp = 200;
 	private int gold;
+	private int statPoints = 0;
 	
 	public Player(){
 		super("Unbekannter Held", 100, 100, 10, 10);
@@ -88,12 +89,36 @@ public class Player extends Character{
 	                + equipment.getEquippedWeapon().getName());
 	    }
 
-	    System.out.println("===============================");
 	}
 	
-	
-	
-	
+	public void spendStatPoint(int choice) {
+		
+		if(statPoints <= 0) {
+			System.out.println("No stat points available!");
+			return;
+		}
+		
+		switch(choice) {
+		case 1:
+			this.setStrength(this.getStrength()+1);
+			System.out.println("Strength increased to " + this.getStrength());
+			break;
+		case 2:
+			this.setAgility(this.getAgility()+1);
+			System.out.println("Agility increased to " + this.getAgility());
+			break;
+		case 3:
+			this.setMaxHealth(this.getMaxHealth()+10);
+			System.out.println("Health increased to " + this.getMaxHealth());
+			break;
+		default:
+			System.out.println("Invalid choice");
+			return;
+			
+		}
+		this.statPoints--;
+	}
+		
 	
 	
 	@Override
@@ -116,6 +141,11 @@ public class Player extends Character{
 			this.xp = this.xp - this.max_xp;
 			this.max_xp = this.max_xp * 2;
 			this.level ++;
+			
+			System.out.println("\n===== LEVEL UP =====");
+		    System.out.println("You reached level " + level + "!");
+		    System.out.println("You received 1 stat point!");
+		    
 			}
 		}
 	}
@@ -166,5 +196,15 @@ public class Player extends Character{
 	public Inventory getInventory() {
 		return this.normalInventory;
 	}
+
+	public int getStatPoints() {
+		return statPoints;
+	}
+
+	public void setStatPoints(int statPoints) {
+		this.statPoints = statPoints;
+	}
+	
+	
 
 }

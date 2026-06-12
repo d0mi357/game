@@ -64,7 +64,7 @@ public class Shop {
 			
 			player.normalInventory.addItem(item);
 			System.out.println("Bought: " + item.getName());
-			player.setGold(player.getGold() - item.getWorth());
+			player.setGold(player.getGold() - (item.getWorth() * item.getQuantity()));
 		}
 		
 	}
@@ -81,7 +81,7 @@ public class Shop {
 		
 		if(item != null) {
 			player.normalInventory.deleteItem(item);
-			player.setGold(player.getGold() + item.getWorth());
+			player.setGold(player.getGold() + (item.getWorth() * item.getQuantity()));
 			
 			System.out.println("Sold: " + item.getName());
 		} else {

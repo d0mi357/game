@@ -6,7 +6,7 @@ public abstract class Character {
 
 	private final String name;
 	private int health;
-	private final int maxHealth;
+	private int maxHealth;
 	private boolean alive;
 	private int strength;
 	private int agility;
@@ -61,6 +61,10 @@ public abstract class Character {
 
 	public int getMaxHealth() {
 		return maxHealth;
+	}
+	
+	public void setMaxHealth(int maxHealth) {
+		this.maxHealth = maxHealth;
 	}
 
 	public int getStrength() {

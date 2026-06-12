@@ -11,7 +11,7 @@ public class Goblin extends Monster{
 
 	@Override
 	public void lastStance() {
-		if(this.getStrength()<30) {
+		if(this.getHealth()<30) {
 			setStrength((int) (getStrength()*1.2));
 		}
 		

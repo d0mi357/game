@@ -5,7 +5,38 @@
         "duration": 3,
         "healPerTurn": 10,
         "name": "Small Healing Potion",
+        "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
         "quantity": 3,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "healAmount": 25,
+        "name": "Small Bandage",
+        "quantity": 1,
+        "worth": 25,
+        "type": "bandage"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 1,
         "worth": 10,
         "type": "healingPotion"
       }
@@ -16,7 +47,7 @@
     "equippedWeapon": {
       "attack": 5,
       "type": "weapon",
-      "durability": 100,
+      "durability": 78,
       "name": "Sword",
       "quantity": 1,
       "worth": 10
@@ -26,7 +57,7 @@
       {
         "attack": 5,
         "type": "weapon",
-        "durability": 100,
+        "durability": 88,
         "name": "Sword",
         "quantity": 1,
         "worth": 10
@@ -41,15 +72,16 @@
       }
     ]
   },
-  "race": "human",
-  "level": 1,
-  "xp": 0,
-  "max_xp": 1000,
-  "gold": 100,
+  "race": "Human",
+  "level": 3,
+  "xp": 100,
+  "max_xp": 800,
+  "gold": 20,
+  "statPoint": 0,
   "name": "domi",
-  "health": 100,
+  "health": 0,
   "maxHealth": 100,
-  "alive": true,
+  "alive": false,
   "strength": 10,
   "agility": 5
 }

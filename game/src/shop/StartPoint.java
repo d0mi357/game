@@ -28,8 +28,9 @@ public class StartPoint {
             System.out.println("2. Enter Dungeon");
             System.out.println("3. Inventory");
             System.out.println("4. Character");
-            System.out.println("5. Save");
-            System.out.println("6. Exit");
+            System.out.println("5. Upgrade Stats");
+            System.out.println("6. Save");
+            System.out.println("7. Exit");
 			
 			int choice = input.readInt(">");
 			
@@ -48,9 +49,12 @@ public class StartPoint {
 				player.displayStatus();
 				break;
 			case 5:
-				this.saveManager.savePlayer(player);
+				this.upgradeStats(player);
 				break;
 			case 6:
+				this.saveManager.savePlayer(player);
+				break;
+			case 7:
 				return false;		
 			default:
 				System.out.println("Invalid choice");
@@ -59,6 +63,22 @@ public class StartPoint {
 			
 		}
 		return false;
+	}
+	
+	private void upgradeStats(Player player) {
+		
+		System.out.println("\n===== UPGRADE =====");
+
+	    System.out.println("Available Points: " + player.getStatPoints());
+	    
+	    System.out.println("1. Strength");
+	    System.out.println("2. Agility");
+	    System.out.println("3. Max Health");
+	    
+	    int choice = input.readInt(">");
+	    
+	    player.spendStatPoint(choice);
+	    
 	}
 	
 
