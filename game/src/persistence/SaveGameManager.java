@@ -1,6 +1,7 @@
 package persistence;
 
 import java.io.FileReader;
+import com.google.gson.JsonSyntaxException;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -8,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import character.Player;
+import inventory.Bandage;
 import inventory.Fruit;
 import inventory.HealingPotion;
 import inventory.Item;
@@ -24,7 +26,8 @@ public class SaveGameManager {
                 RuntimeTypeAdapterFactory.of(Item.class, "type")
                         .registerSubtype(HealingPotion.class, "healingPotion")
                         .registerSubtype(Fruit.class, "fruit")
-                        .registerSubtype(Weapon.class, "weapon");
+                        .registerSubtype(Weapon.class, "weapon")
+                        .registerSubtype(Bandage.class, "bandage");
 
         this.gson = new GsonBuilder()
                 .registerTypeAdapterFactory(itemAdapter)
@@ -46,7 +49,7 @@ public class SaveGameManager {
             Player loaded = gson.fromJson(reader, Player.class);
             System.out.println("📂 Spielstand erfolgreich geladen!");
             return loaded;
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             System.out.println("ℹ️ Kein Spielstand gefunden. Ein neuer Charakter wird erstellt.");
             return null;
         }

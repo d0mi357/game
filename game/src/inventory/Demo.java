@@ -28,20 +28,20 @@ public class Demo {
 			player1 = playercreator.createPlayer();
 			player1.startStatus();
 			
-			HealingPotion potion = new HealingPotion("Small Healing Potion", 3, 3, 10);
+			HealingPotion potion = new HealingPotion("Small Healing Potion", 3, 10, 3, 10);
 			player1.normalInventory.addItem(potion);
 			
 		}
 		
-		StartPoint startpoint = new StartPoint();
-		startpoint.enter(player1);
+		StartPoint startpoint = new StartPoint(saveManager);
+		boolean enterDungeon = startpoint.enter(player1);
 		saveManager.savePlayer(player1);
 		
 		
 		
 		
 		if(player1.equipment.getIndexCombatGear("Bow") == -1) {
-			Weapon weapon2 = new Weapon("Bow", 100, 500, 5, "Long Range");
+			Weapon weapon2 = new Weapon("Bow", 100, 15, 500, 5, "Long Range");
 			player1.equipment.addWeapon(weapon2);
 		}
 	
@@ -56,7 +56,9 @@ public class Demo {
 		dungeon.addFloors(new Floor(1, goblin1));
 		dungeon.addFloors(new Floor(2, new Goblin("Boss Goblin", 120, 120, 20, 5, 500)));
 		
-		dungeon.startDungeon(player1);
+		if(enterDungeon) {
+			dungeon.startDungeon(player1);
+		}
 		
 		System.out.println("--- STARTE TEST-SPEICHERUNG ---");
 		saveManager.savePlayer(player1);

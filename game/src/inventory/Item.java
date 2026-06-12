@@ -6,11 +6,13 @@ public abstract class Item {
 	
 	private String name;
 	private int quantity;
+	private int worth;
 	
 	public Item() {}
-	public Item(String name, int quantity) {
+	public Item(String name, int quantity, int worth) {
 		this.name = name;
 		this.quantity = quantity;
+		this.worth = worth;
 
 	}
 	
@@ -35,6 +37,13 @@ public abstract class Item {
 	}
 	
 	
+	
+	public int getWorth() {
+		return worth;
+	}
+	public void setWorth(int worth) {
+		this.worth = worth;
+	}
 	@Override
 	public String toString() {
 	    return name + " x" + quantity;

@@ -5,8 +5,8 @@ public class UseableItem extends Item{
 	private int durability;
 	
 	public UseableItem() {super();}
-	public UseableItem(String name, int quantity, int durability) {
-		super(name, quantity);
+	public UseableItem(String name, int quantity, int worth, int durability) {
+		super(name, quantity, worth);
 		this.durability = durability;
 	}
 

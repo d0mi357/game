@@ -21,7 +21,7 @@ public class Equipment {
 	}
 	
 	public void displayCombatGear() {
-		    System.out.println("\n=================== 🎒 DEIN KAMPF-INVENTAR ===================");
+		    System.out.println("\n=================== Combat Inventory ===================");
 		    
 		    // Tabellen-Kopfzeile mit fester Spaltenbreite:
 		    // %-3s  = Index (3 Zeichen Platz, linksbündig)
@@ -61,7 +61,7 @@ public class Equipment {
 	}
 	
 	public void standardEquipment() {
-		Weapon weapon = new Weapon("Sword", 1, 100, 5, "Melee");
+		Weapon weapon = new Weapon("Sword", 1, 10, 100, 5, "Melee");
 		this.combatGear.add(weapon);
 		this.equipWeapon(weapon);
 	}

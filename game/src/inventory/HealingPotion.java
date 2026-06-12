@@ -8,8 +8,8 @@ public class HealingPotion extends Item{
 	private int duration;
 	private int healPerTurn;
 	
-	public HealingPotion(String name, int quantity, int duration, int healPerTurn) {
-		super(name, quantity);
+	public HealingPotion(String name, int quantity, int worth, int duration, int healPerTurn) {
+		super(name, quantity, worth);
 		this.duration = duration;
 		this.healPerTurn = healPerTurn;
 	}

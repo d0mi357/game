@@ -72,6 +72,25 @@ public class Player extends Character{
 		}
 	}
 	
+	public void displayStatus() {
+	    System.out.println("\n========== CHARACTER ==========");
+	    System.out.println("Name:      " + this.getName());
+	    System.out.println("Race:      " + this.getRace());
+	    System.out.println("Level:     " + this.level);
+	    System.out.println("XP:        " + this.xp + "/" + this.max_xp);
+	    System.out.println("Gold:      " + this.gold);
+	    System.out.println("Health:    " + this.getHealth() + "/" + this.getMaxHealth());
+	    System.out.println("Strength:  " + this.getStrength());
+	    System.out.println("Agility:   " + this.getAgility());
+
+	    if(equipment.getEquippedWeapon() != null) {
+	        System.out.println("Weapon:    "
+	                + equipment.getEquippedWeapon().getName());
+	    }
+
+	    System.out.println("===============================");
+	}
+	
 	
 	
 	

@@ -7,8 +7,8 @@ public class Weapon extends UseableItem {
 	public Weapon() {super();}
 
 	
-	public Weapon(String name, int quantity, int durability, int attack, String type) {
-		super(name, quantity, durability);
+	public Weapon(String name, int quantity, int worth, int durability, int attack, String type) {
+		super(name, quantity, worth, durability);
 		this.attack = attack;
 		this.setType(type);
 		

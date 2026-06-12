@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import character.Player;
+import inventory.Bandage;
 import inventory.HealingPotion;
 import inventory.Item;
+import util.InputHelper;
 
 public class Shop {
 	
 	private ArrayList<Item> shopItems = new ArrayList<>();
 	private Scanner scanner = new Scanner(System.in);
+	private InputHelper input = new InputHelper();
 	
 	public Shop() {
-		shopItems.add(new HealingPotion("Small Healing Potion", 3, 3, 10));
+		shopItems.add(new HealingPotion("Small Healing Potion", 3, 10, 3, 10));
+		shopItems.add(new Bandage("Small Bandage", 2, 25, 25));
 	}
 	
 	public void open(Player player) {
@@ -25,9 +29,8 @@ public class Shop {
             System.out.println("1. Buy Item");
             System.out.println("2. Sell Item");
             System.out.println("3. Leave Shop");
-            System.out.print("> ");
             
-            int choice = Integer.parseInt(scanner.nextLine());
+            int choice = input.readInt(">");
             
             switch(choice) {
             case 1:
@@ -53,15 +56,15 @@ public class Shop {
 			System.out.println((i + 1) +". " + this.shopItems.get(i));
 		}
 		
-		System.out.println("> ");
 		
-		int choice = Integer.parseInt(scanner.nextLine()) - 1;
+		int choice = input.readInt(">") - 1;
 		
 		if(choice >= 0 && choice < this.shopItems.size()) {
 			Item item = this.shopItems.get(choice);
 			
 			player.normalInventory.addItem(item);
 			System.out.println("Bought: " + item.getName());
+			player.setGold(player.getGold() - item.getWorth());
 		}
 		
 	}
@@ -71,15 +74,14 @@ public class Shop {
 		player.normalInventory.displayInventory();
 		
 		System.out.println("Which Item do you want to sell?");
-		System.out.println(">");
 		
-		int itemName = Integer.parseInt(scanner.nextLine());
+		int itemidx = input.readInt(">");
 		
-		Item item = player.normalInventory.getItemByIndex(itemName -1);
+		Item item = player.normalInventory.getItemByIndex(itemidx -1);
 		
 		if(item != null) {
-			player.normalInventory.deleteItem(item.getName());
-			player.setGold(player.getGold() + 10);
+			player.normalInventory.deleteItem(item);
+			player.setGold(player.getGold() + item.getWorth());
 			
 			System.out.println("Sold: " + item.getName());
 		} else {
