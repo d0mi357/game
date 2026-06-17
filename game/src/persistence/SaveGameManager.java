@@ -9,12 +9,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import character.Player;
-import inventory.Bandage;
-import inventory.Fruit;
-import inventory.HealingPotion;
-import inventory.Item;
-import inventory.Weapon;
-import util.RuntimeTypeAdapterFactory;
+import items.Bandage;
+import items.BossGoblinCrown;
+import items.DragonScale;
+import items.Fruit;
+import items.GoblinTotem;
+import items.HealingPotion;
+import items.Item;
+import items.OrcTusk;
+import items.StrengthPotion;
+import items.VampireCloak;
+import items.Weapon;
+import monster.Vampire;
 
 public class SaveGameManager {
 
@@ -27,30 +33,47 @@ public class SaveGameManager {
                         .registerSubtype(HealingPotion.class, "healingPotion")
                         .registerSubtype(Fruit.class, "fruit")
                         .registerSubtype(Weapon.class, "weapon")
-                        .registerSubtype(Bandage.class, "bandage");
+                        .registerSubtype(Bandage.class, "bandage")
+                        .registerSubtype(GoblinTotem.class, "goblintotem")
+        				.registerSubtype(OrcTusk.class, "orctusk")
+        				.registerSubtype(VampireCloak.class, "vampirecloak")
+        				.registerSubtype(BossGoblinCrown.class, "bossgoblincrown")
+        				.registerSubtype(DragonScale.class, "dragonscale");
 
         this.gson = new GsonBuilder()
-                .registerTypeAdapterFactory(itemAdapter)
-                .setPrettyPrinting()
+                .registerTypeAdapterFactory(itemAdapter) //TypeAdapter für Item-Objekt
+                .setPrettyPrinting() // besseres Fromat
                 .create();
     }
+    
+    /**
+     * Writes the player data to the save file.
+     *
+     * @param player the player to save
+     */
 
     public void savePlayer(Player player) {
-        try (FileWriter writer = new FileWriter(fileName)) {
-            gson.toJson(player, writer);
-            System.out.println("💾 Spielstand erfolgreich in '" + fileName + "' gespeichert!");
-        } catch (IOException e) {
-            System.err.println("❌ Fehler beim Speichern: " + e.getMessage());
+        try (FileWriter writer = new FileWriter(fileName)) { //öffnet datei
+            gson.toJson(player, writer); // zu JSON umwandeln
+            System.out.println("💾 Progress saved!");
+        } catch (IOException e) { // Falls Datei nicht gespeichert werden kann
+            System.err.println("❌ Failed to save game: " + e.getMessage());
         }
     }
+    
+    /**
+     * Loads the player from the save file.
+     *
+     * @return the loaded player or null if no save file exists
+     */
 
     public Player loadPlayer() {
-        try (FileReader reader = new FileReader(fileName)) {
-            Player loaded = gson.fromJson(reader, Player.class);
-            System.out.println("📂 Spielstand erfolgreich geladen!");
+        try (FileReader reader = new FileReader(fileName)) { //Datei öffnen
+            Player loaded = gson.fromJson(reader, Player.class); //JSON -> Objekt
+            System.out.println("📂 Game loaded!");
             return loaded;
-        } catch (IOException | JsonSyntaxException e) {
-            System.out.println("ℹ️ Kein Spielstand gefunden. Ein neuer Charakter wird erstellt.");
+        } catch (IOException | JsonSyntaxException e) { //Datei existiert nicht oder JSON Datei kaputt
+            System.out.println("ℹ️ No save file found. Creatin a new Character");
             return null;
         }
     }

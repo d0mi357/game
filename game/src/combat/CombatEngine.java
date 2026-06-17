@@ -1,14 +1,27 @@
 package combat;
 
 
-import character.Monster;
 import character.Player;
+import monster.Monster;
 
+
+/**
+ * Handles the combat logic between the player and a monster.
+ * Controls turns, attacks, damage calculation and battle state.
+ */
 
 public class CombatEngine{
 	private Player player;
 	private Monster monster;
 	private boolean isPlayerTurn = true;
+	
+	 /**
+     * Creates a new combat engine for a fight between a player and a monster.
+     *
+     * @param player  the player participating in the battle
+     * @param monster the monster participating in the battle
+     */
+	
 	
 	public CombatEngine(Player player, Monster monster) {
 		this.player = player;
@@ -17,6 +30,14 @@ public class CombatEngine{
 		health = player.getMaxHealth();
 		player.setHealth(health);
 	}
+	
+	 /**
+     * Executes an attack for the current turn.
+     * If it is the player's turn, active effects are applied and the monster takes damage.
+     * If it is the monster's turn, the player may dodge the attack.
+     *
+     * @return the amount of damage dealt
+     */
 	
 
 	public int executeAttack() {
@@ -45,12 +66,25 @@ public class CombatEngine{
 			return damage;
 			}	
 	
+	
+	/**
+     * Checks whether the battle is over.
+     *
+     * @return true if either the player or the monster is defeated
+     */
+	
 	public boolean isBattleOver() {
 		if(player.isAlive() == true && monster.isAlive() == true) 
 			return false;
 		else
 			return true;
 	}
+	
+	/**
+     * Calculates the monster's current health percentage.
+     *
+     * @return monster health as a value between 0.0 and 1.0
+     */
 	
 	public float hpPercentage() {
 		return monster.getHealth() / monster.getMaxHealth();

@@ -50,8 +50,6 @@ game/
     character/
       ActiveEffect.java
       Character.java
-      Goblin.java
-      Monster.java
       Player.java
       PlayerCreator.java
     combat/
@@ -63,18 +61,37 @@ game/
     inventory/
       Demo.java
       Equipment.java
-      Fruit.java
-      HealingPotion.java
       Inventory.java
+    items/
+      Bandage.java
+      BossGoblinCrown.java
+      DragonScale.java
+      Fruit.java
+      GoblinTotem.java
+      HealingPotion.java
       Item.java
+      LootItem.java
+      OrcTusk.java
+      StrengthPotion.java
       UseableItem.java
+      VampireCloak.java
       Weapon.java
+    monster/
+      BossGoblin.java
+      Dragon.java
+      Goblin.java
+      Monster.java
+      Orc.java
+      Vampire.java
     persistence/
       RuntimeTypeAdapterFactory.java
       SaveGameManager.java
     shop/
       Shop.java
       StartPoint.java
+    util/
+      AutoSave.java
+      InputHelper.java
   .classpath
   .gitignore
   .project
@@ -84,49 +101,703 @@ game/
 <files>
 This section contains the contents of the repository's files.
 
-<file path="game/src/shop/StartPoint.java">
-package shop;
-
-import java.util.Scanner;
+<file path="game/src/items/Bandage.java">
+package items;
 
 import character.Player;
 
-public class StartPoint {
+public class Bandage extends Item{
 	
-	private Scanner scanner = new Scanner(System.in);
-	private Shop shop = new Shop();
+	private int healAmount;
 	
-	public void enter(Player player) {
+	public Bandage(String name, int quantity, int healAmount, int worth) {
+		super(name, quantity, worth);
+		this.healAmount = healAmount;
+	}
+	
+	@Override 
+	public void use(Player player) {
 		
-		boolean running = true;
-		
-		while(running) {
-			System.out.println("\n===== START POINT =====");
-            System.out.println("1. Open Shop");
-            System.out.println("2. Enter Dungeon");
-            System.out.print("> ");
-			
-			int choice = Integer.parseInt(scanner.nextLine());
-			
-			switch(choice) {
-			case 1:
-				shop.open(player);
-				break;
-			case 2:
-				running = false;
-				break;
-			default:
-				System.out.println("Invalid choice");
-				
-			
-			
-			
-			}
-			
+		if(this.getQuantity() <= 0) {
+			System.out.println("No bandages left!");
+			return;
 		}
+		
+		player.heal(healAmount);
+		
+		System.out.println("You used a Bandage and healed " + this.healAmount + " HP!");
+		
+		this.decreaseQuantity();		
+		
+	}
+
+	public int getHealAmount() {
+		return healAmount;
+	}
+
+	public void setHealAmount(int healAmount) {
+		this.healAmount = healAmount;
+	}
+
+	
+	
+	
+	
+	
+}
+</file>
+
+<file path="game/src/items/BossGoblinCrown.java">
+package items;
+
+public class BossGoblinCrown extends LootItem{
+
+	public BossGoblinCrown() {
+		super("Goblin Crown", 1, 300);
+	}
+
+
+}
+</file>
+
+<file path="game/src/items/DragonScale.java">
+package items;
+
+public class DragonScale extends LootItem{
+
+	public DragonScale() {
+        super("Dragon Scale", 1, 750);
+    }
+}
+</file>
+
+<file path="game/src/items/Fruit.java">
+package items;
+
+public class Fruit extends Item{
+	private String type;
+	
+	public Fruit(String type, String name, int quantity) {
+		super(name, quantity);
+		this.type = type;
+		
+	}
+	
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getType() {
+		return this.type;
+	}
+	@Override
+	public String toString() {
+		return "Type: " + type +", Fruit: " + getName() + ", Quantity: " + getQuantity();
+	}
+}
+</file>
+
+<file path="game/src/items/GoblinTotem.java">
+package items;
+
+public class GoblinTotem extends LootItem{
+
+	public GoblinTotem() {
+		super("Goblin Totem", 1, 50);
+	}
+}
+</file>
+
+<file path="game/src/items/HealingPotion.java">
+package items;
+
+import character.ActiveEffect;
+import character.Player;
+
+public class HealingPotion extends Item{
+	
+	private int duration;
+	private int healPerTurn;
+	
+	public HealingPotion(String name, int quantity, int worth, int duration, int healPerTurn) {
+		super(name, quantity, worth);
+		this.duration = duration;
+		this.healPerTurn = healPerTurn;
+	}
+	
+	@Override
+	public void use(Player player) {
+		if(getQuantity() <= 0) {
+			System.out.println("No more Potions available");
+			return;
+		}
+		player.heal(this.healPerTurn);
+		
+		player.addEffect(new ActiveEffect(getName(), duration - 1, healPerTurn));
+		this.decreaseQuantity();
+		
+		System.out.println("You have used a " + this.getName() + "!");
+		
+		
+		
+	} @Override
+    public String toString() {
+        return "HealingPotion: " + getName()
+                + ", Quantity: " + getQuantity()
+                + ", Duration: " + duration
+                + ", Heal per Turn: " + healPerTurn;
+    }
+
+	
+	
+	
+	
+}
+</file>
+
+<file path="game/src/items/Item.java">
+package items;
+
+import character.Player;
+
+/**
+ * Abstract base class for all items in the game.
+ * Stores common item properties such as name,
+ * quantity and gold value.
+ */
+
+public abstract class Item {
+	
+	private String name;
+	private int quantity;
+	private int worth;
+	
+	public Item() {}
+	
+	/**
+	 * Creates a new item.
+	 *
+	 * @param name item name
+	 * @param quantity amount of items
+	 * @param worth gold value of the item
+	 */
+	
+	public Item(String name, int quantity, int worth) {
+		this.name = name;
+		this.quantity = quantity;
+		this.worth = worth;
+
+	}
+	
+	/**
+	 * Returns the item name.
+	 *
+	 * @return item name
+	 */
+	
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Returns the current quantity of the item.
+	 *
+	 * @return item quantity
+	 */
+	
+	public int getQuantity() {
+		return quantity;
+	}
+	
+	/**
+	 * Sets the item name.
+	 *
+	 * @param name new item name
+	 */
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Sets the item quantity.
+	 *
+	 * @param quantity new quantity
+	 */
+	
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	
+	/**
+	 * Reduces the item quantity by one.
+	 * Quantity cannot become negative.
+	 */
+	
+	public void decreaseQuantity() {
+		if(this.quantity > 0 )
+			this.quantity--;
+	}
+	
+	/**
+	 * Returns the item's gold value.
+	 *
+	 * @return item worth in gold
+	 */
+	
+	public int getWorth() {
+		return worth;
+	}
+	
+	/**
+	 * Sets the item's gold value.
+	 *
+	 * @param worth new gold value
+	 */
+		
+	public void setWorth(int worth) {
+		this.worth = worth;
+	}
+	@Override
+	public String toString() {
+	    return name + " x" + quantity;
+	}
+	/**
+	 * Uses the item and applies its effect.
+	 *
+	 * @param player the player using the item
+	 */
+	
+	public void use(Player player) {
+		System.out.println(this.name + " cannot be used.");
+	}
+
+}
+</file>
+
+<file path="game/src/items/LootItem.java">
+package items;
+
+import character.Player;
+
+/**
+ * Represents a loot item obtained from defeated monsters.
+ * Loot items usually have no direct use and can be sold
+ * for gold or collected as trophies.
+ */	
+
+public abstract class LootItem extends Item{
+	
+	/**
+	 * Creates a new loot item.
+	 *
+	 * @param name name of the loot item
+	 * @param quantity amount of loot items
+	 * @param worth gold value of the loot item
+	 */
+		
+	public LootItem(String name, int quantity, int worth) {
+		super(name, quantity, worth);
+		}
+	
+	@Override
+	public void use(Player player) {
+		System.out.println(this.getName()+" connot be used!");	
+		}
+	
+	}
+</file>
+
+<file path="game/src/items/OrcTusk.java">
+package items;
+
+import character.Player;
+
+public class OrcTusk extends Item {
+
+    public OrcTusk() {
+        super("Orc Tusk", 1, 100);
+    }
+
+    @Override
+    public void use(Player player) {
+        System.out.println("The Orc Tusk is a valuable trophy and cannot be used.");
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " (Worth: " + getWorth() + " Gold)";
+    }
+}
+</file>
+
+<file path="game/src/items/StrengthPotion.java">
+package items;
+
+import character.ActiveEffect;
+import character.Player;
+
+public class StrengthPotion extends Item{
+	private int strengthBoost;
+	private int duration;
+	
+	public StrengthPotion(String name, int quantity, int worth, int duration, int strengthBoost) {
+		super(name, quantity, worth);
+		this.duration = duration;
+		this.strengthBoost = strengthBoost;
+	}
+	
+	@Override
+	public void use(Player player) {
+		if(getQuantity() <= 0) {
+            System.out.println("No more Strength Potions available.");
+            return;
+        }
+
+        player.addEffect(new ActiveEffect(getName(), duration, 0, strengthBoost));
+
+        decreaseQuantity();
+
+        System.out.println("Strength increased by " + strengthBonus + " for " + duration + " turns!");
+	}
+
+	public int getStrengthBoost() {
+		return strengthBoost;
+	}
+
+	public void setStrengthBoost(int strengthBoost) {
+		this.strengthBoost = strengthBoost;
+	}
+	
+	
+}
+</file>
+
+<file path="game/src/items/UseableItem.java">
+package items;
+
+/**
+ * Represents an item that can be used by the player.
+ * Usable items provide temporary or permanent effects such as
+ * healing, stat boosts or other beneficial effects.
+ */
+
+public class UseableItem extends Item{
+	
+	private int durability;
+	
+	public UseableItem() {super();}
+	
+	/**
+	 * Creates a new usable item.
+	 *
+	 * @param name item name
+	 * @param quantity amount of items
+	 * @param worth gold value of the item
+	 */
+	
+	public UseableItem(String name, int quantity, int worth, int durability) {
+		super(name, quantity, worth);
+		this.durability = durability;
+	}
+
+	public int getDurability() {
+		return durability;
+	}
+
+	public void setDurability(int durability) {
+		this.durability = durability;
+	}
+	
+	/**
+	 * Reduces the item's durability by the specified amount.
+	 * Durability cannot fall below zero.
+	 *
+	 * @param amount durability damage to apply
+	 */
+	
+	public void damageDurability(int amount) {
+		if(amount > 0) {
+			//throw new IllegalArgumentException("damage amount must be >= 0");
+		}
+		int newDurability = Math.max(0, this.durability - amount);
+		setDurability(newDurability);
+	}
+
+	@Override
+	public String toString() {
+		return "UsableItem: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability();
 	}
 	
 
+	
+}
+</file>
+
+<file path="game/src/items/VampireCloak.java">
+package items;
+
+import character.Player;
+
+public class VampireCloak extends Item {
+
+    public VampireCloak() {
+        super("Vampire Cloak", 1, 250);
+    }
+
+    @Override
+    public void use(Player player) {
+        System.out.println("The Vampire Cloak is a valuable trophy and cannot be used.");
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " (Worth: " + getWorth() + " Gold)";
+    }
+}
+</file>
+
+<file path="game/src/items/Weapon.java">
+package items;
+
+public class Weapon extends UseableItem {
+	private int attack;
+	private String type;
+
+	public Weapon() {super();}
+
+	
+	public Weapon(String name, int quantity, int worth, int durability, int attack, String type) {
+		super(name, quantity, worth, durability);
+		this.attack = attack;
+		this.setType(type);
+		
+		
+	}
+	
+
+	public int getAttack() {
+		return attack;
+	}
+
+	public void setAttack(int attack) {
+		this.attack = attack;
+	}
+	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	@Override
+	public String toString() {
+		return "Weapon: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability() + ", Attack: " + this.attack+", Type: " + this.type;
+	}
+
+	
+}
+</file>
+
+<file path="game/src/monster/BossGoblin.java">
+package monster;
+
+import items.BossGoblinCrown;
+import items.StrengthPotion;
+
+public class BossGoblin extends Monster{
+	public BossGoblin(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
+		super(name, health, maxHealth, strength, agility, droppedXP);
+		//this.addDrop(new StrengthPotion("Small Strength Potion", 2, 30, 3, 7));
+		this.addDrop(new BossGoblinCrown());
+	}
+
+	
+	
+	@Override
+	public void lastStance() {
+		if(this.getHealth()<50) {
+			setStrength((int) (getStrength()*1.4));	
+		}
+	}
+}
+</file>
+
+<file path="game/src/monster/Dragon.java">
+package monster;
+
+import items.DragonScale;
+
+public class Dragon extends Monster{
+	public Dragon(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
+		super(name, health, maxHealth, strength, agility, droppedXP);
+		this.addDrop(new DragonScale());
+}
+
+	@Override
+		public void lastStance() {
+			if(this.getHealth()<70) {
+				setStrength((int) (getStrength()*1.4));	
+			}
+		}
+}
+</file>
+
+<file path="game/src/monster/Goblin.java">
+package monster;
+
+import items.GoblinTotem;
+import items.HealingPotion;
+
+public class Goblin extends Monster{
+	
+	public Goblin(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
+		super(name, health, maxHealth, strength, agility, droppedXP);
+		addDrop(new HealingPotion("Small Healing Potion",1, 10, 3, 10));
+		addDrop(new GoblinTotem());
+	}
+
+	@Override
+	public void lastStance() {
+		if(this.getHealth()<30) {
+			setStrength((int) (getStrength()*1.2));
+		}
+		
+	 
+		
+	}
+}
+</file>
+
+<file path="game/src/monster/Monster.java">
+package monster;
+
+import java.util.ArrayList;
+
+import character.Character;
+import items.Item;
+
+public abstract class Monster extends Character{
+	
+	private int droppedXP;
+	private ArrayList<Item> droppedItems;
+	
+	public Monster(String name, int health, int maxHealth, int strength, int agility,  int droppedXP) {
+		super(name, health, maxHealth, strength, agility);
+		this.setDroppedXP(droppedXP);
+		this.droppedItems = new ArrayList<>();
+	}
+	
+
+
+
+	@Override
+	public String toString() {
+		return "Name: " + getName() + "\n" +
+				"Health: " + getHealth() + "/" + getMaxHealth() + "\n" +
+				"Strength: " + getStrength() + "\n";
+				
+				
+	}
+
+
+	@Override
+	public int calculateTotalDamage() {
+				return this.getStrength();
+	}
+	
+	/**
+	 * Activates the boss's last stance when its health falls below
+	 * a certain threshold, increasing its combat strength.
+	 */
+	
+	public abstract void lastStance();
+	
+
+	public int getDroppedXP() {
+		return droppedXP;
+	}
+	public void addDrop(Item item) {
+		this.droppedItems.add(item);
+	}
+
+
+	public void setDroppedXP(int droppedXP) {
+		this.droppedXP = droppedXP;
+	}
+	
+	public ArrayList<Item> getDroppedItems(){
+		return droppedItems;
+	}
+}
+</file>
+
+<file path="game/src/monster/Orc.java">
+package monster;
+
+import items.OrcTusk;
+
+public class Orc extends Monster{
+	public Orc(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
+		super(name, health, maxHealth, strength, agility, droppedXP);
+		this.addDrop(new OrcTusk());
+}
+
+	@Override
+		public void lastStance() {
+			if(this.getHealth()<50) {
+				setStrength((int) (getStrength()*1.4));	
+			}
+		}
+		
+	}
+</file>
+
+<file path="game/src/monster/Vampire.java">
+package monster;
+
+import items.HealingPotion;
+import items.VampireCloak;
+
+public class Vampire extends Monster{
+	public Vampire(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
+		super(name, health, maxHealth, strength, agility, droppedXP);
+		this.addDrop(new VampireCloak());
+		this.addDrop(new HealingPotion("Large Healing Potion", 2, 50, 3, 50));
+}
+
+	@Override
+		public void lastStance() {
+			if(this.getHealth()<50) {
+				setStrength((int) (getStrength()*1.4));	
+			}
+		}
+
+}
+</file>
+
+<file path="game/src/util/AutoSave.java">
+package util;
+
+import character.Player;
+import persistence.SaveGameManager;
+
+public class AutoSave {
+	 private static final SaveGameManager saveManager =
+	            new SaveGameManager();
+
+	 /**
+	  * Saves the current player progress to the save file.
+	  *
+	  * @param player the player whose data should be saved
+	  */
+	 
+	    public static void save(Player player) {
+	        saveManager.savePlayer(player);
+	    }
 }
 </file>
 
@@ -138,11 +809,25 @@ encoding/<project>=UTF-8
 <file path="game/src/character/ActiveEffect.java">
 package character;
 
+/**
+ * Represents a temporary effect applied to a player.
+ * Effects can heal the player over multiple turns and
+ * automatically expire after a specified duration.
+ */
+
 public class ActiveEffect {
 	
 	private String name;
 	private int remainingTurns;
 	private int healPerTurn;
+	
+	/**
+	 * Creates a new active effect.
+	 *
+	 * @param name name of the effect
+	 * @param remainingTurns number of turns the effect remains active
+	 * @param healPerTurn amount of health restored each turn
+	 */
 	
 	public ActiveEffect(String name, int remainingTurns, int healPerTurn) {
 		this.name = name;
@@ -151,10 +836,24 @@ public class ActiveEffect {
 		
 	}
 	
+	/**
+	 * Applies the effect to the player for one turn.
+	 * The player's health is restored and the remaining
+	 * duration is reduced by one turn.
+	 *
+	 * @param player the player affected by this effect
+	 */
+	
 	public void apply(Player player) {
 		player.heal(healPerTurn);
 		remainingTurns--;
 	}
+	
+	/**
+	 * Checks whether the effect has expired.
+	 *
+	 * @return true if no turns remain, otherwise false
+	 */
 	
 	public boolean isFinished() {
 		return remainingTurns<=0;
@@ -202,50 +901,84 @@ import java.util.ArrayList;
 import character.Player;
 import combat.CombatEngine;
 import combat.CombatView;
+import util.AutoSave;
+import util.InputHelper;
 
 public class Dungeon {
-	
-	ArrayList<Floor> floors;
-	
-	public Dungeon() {
-		floors = new ArrayList<>();	
-		
-		}
-	public void addFloors(Floor floor) {
-		floors.add(floor);
-	}
-	
-	 public void startDungeon(Player player) {
-	        System.out.println("=== Dungeon startet ===");
 
-	        for (Floor floor : floors) {
-	            System.out.println("Floor " + floor.getFloorNumber());
+    private ArrayList<Floor> floors;
+    private InputHelper input = new InputHelper();
 
-	            CombatEngine engine = new CombatEngine(player, floor.getMonster());
-	            CombatView view = new CombatView(engine);
-	            view.startBattle();
+    public Dungeon() {
+        floors = new ArrayList<>();
+    }
 
-	            if (player.isAlive()) {
-	                floor.setCleared(true);
-	                System.out.println("Floor " + floor.getFloorNumber() + " geschafft!");
-	            } else {
-	                System.out.println("Du bist im Dungeon gestorben.");
-	                break;
-	            }
-	        }
+    public void addFloors(Floor floor) {
+        floors.add(floor);
+    }
 
-	        System.out.println("=== Dungeon beendet ===");
-	    }
-	
-	
-	
+    public boolean startDungeon(Player player) {
+        System.out.println("=== Dungeon startet ===");
+
+        for(Floor floor : floors) {
+            System.out.println("Floor " + floor.getFloorNumber());
+
+            CombatEngine engine = new CombatEngine(player, floor.getMonster());
+            CombatView view = new CombatView(engine);
+            view.startBattle();
+
+            if(!player.isAlive()) {
+                System.out.println("You lost!");
+                System.out.println("Du bist im Dungeon gestorben.");
+                return false;
+            }
+
+            floor.setCleared(true);
+            System.out.println("Floor " + floor.getFloorNumber() + " geschafft!");
+
+            System.out.println();
+            System.out.println("1. Continue Dungeon");
+            System.out.println("2. Return to Start Point");
+
+            int choice = input.readInt(">");
+
+            switch(choice) {
+                case 1:
+                    AutoSave.save(player);
+                    continue;
+
+                case 2:
+                    AutoSave.save(player);
+                    return true;
+
+                default:
+                    System.out.println("Invalid choice");
+                    AutoSave.save(player);
+                    return true;
+            }
+        }
+
+        dungeonCompletion(player);
+        return true;
+    }
+
+    private void dungeonCompletion(Player player) {
+        System.out.println("\n=================================");
+        System.out.println("        DUNGEON COMPLETED");
+        System.out.println("=================================");
+        System.out.println("You cleared all floors!");
+        System.out.println("You survived the dungeon.");
+        System.out.println("=================================");
+
+        AutoSave.save(player);
+    }
 }
 </file>
 
 <file path="game/src/dungeon/Floor.java">
 package dungeon;
 
-import character.Monster;
+import monster.Monster;
 
 public class Floor {
 	private int floorNumber;
@@ -284,33 +1017,6 @@ public class Floor {
 	
 	
 	
-}
-</file>
-
-<file path="game/src/inventory/Fruit.java">
-package inventory;
-
-public class Fruit extends Item{
-	private String type;
-	
-	public Fruit(String type, String name, int quantity) {
-		super(name, quantity);
-		this.type = type;
-		
-	}
-	
-	
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getType() {
-		return this.type;
-	}
-	@Override
-	public String toString() {
-		return "Type: " + type +", Fruit: " + getName() + ", Quantity: " + getQuantity();
-	}
 }
 </file>
 
@@ -436,98 +1142,50 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 }
 </file>
 
-<file path="game/src/shop/Shop.java">
-package shop;
+<file path="game/src/util/InputHelper.java">
+package util;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
-import character.Player;
-import inventory.HealingPotion;
-import inventory.Item;
+/**
+ * Utility class for reading and validating user input.
+ * Provides methods for safely reading integers and strings
+ * from the console.
+ */
 
-public class Shop {
+public class InputHelper {
 	
-	private ArrayList<Item> shopItems = new ArrayList<>();
-	private Scanner scanner = new Scanner(System.in);
+	private Scanner scanner;
 	
-	public Shop() {
-		shopItems.add(new HealingPotion("Small Healing Potion", 3, 3, 10));
+	/**
+	 * Creates a new input scanner.
+	 */
+	
+	public InputHelper() {
+		this.scanner = new Scanner(System.in);
 	}
 	
-	public void open(Player player) {
-		
-		boolean running = true;
-		while(running) {
-			System.out.println("\n===== SHOP =====");
-            System.out.println("Gold: " + player.getGold());
-            System.out.println("1. Buy Item");
-            System.out.println("2. Sell Item");
-            System.out.println("3. Leave Shop");
-            System.out.print("> ");
-            
-            int choice = Integer.parseInt(scanner.nextLine());
-            
-            switch(choice) {
-            case 1:
-            	this.buyItem(player);
-            	break;
-            case 2:
-            	sellItem(player);
-            	break;
-            case 3:
-            	running = false;
-            	break;
-            default: 
-            	System.out.println("Invalid choice");	
-            }
-		}
-	}
 	
-	private void buyItem(Player player) {
-		
-		System.out.println("\nItems for sale: ");
-		
-		for(int i = 0;i < this.shopItems.size();i++) {
-			System.out.println((i + 1) +". " + this.shopItems.get(i));
-		}
-		
-		System.out.println("> ");
-		
-		int choice = Integer.parseInt(scanner.nextLine()) - 1;
-		
-		if(choice >= 0 && choice < this.shopItems.size()) {
-			Item item = this.shopItems.get(choice);
+	/**
+	 * Reads an integer value from the console.
+	 * Repeats the input request until a valid number is entered.
+	 *
+	 * @param prompt message displayed to the user
+	 * @return the entered integer
+	 */
+	
+	public int readInt(String message) {
+		while(true) {
+			System.out.println(message);
 			
-			player.normalInventory.addItem(item);
-			System.out.println("Bought: " + item.getName());
+			try {
+				return Integer.parseInt(scanner.nextLine());
+			}catch(NumberFormatException e) {
+				System.out.println("Please enter a valid number!");
+			}
 		}
-		
 	}
-	
-	
-	private void sellItem(Player player) {
-		player.normalInventory.displayInventory();
-		
-		System.out.println("Which Item do you want to sell?");
-		System.out.println(">");
-		
-		int itemName = Integer.parseInt(scanner.nextLine());
-		
-		Item item = player.normalInventory.getItemByIndex(itemName -1);
-		
-		if(item != null) {
-			player.normalInventory.deleteItem(item.getName());
-			player.setGold(player.getGold() + 10);
-			
-			System.out.println("Sold: " + item.getName());
-		} else {
-			System.out.println("Item not found");
-		}
-	}	
-		
-	
-	
+
 }
 </file>
 
@@ -555,52 +1213,6 @@ public class Shop {
 </projectDescription>
 </file>
 
-<file path="game/src/inventory/HealingPotion.java">
-package inventory;
-
-import character.ActiveEffect;
-import character.Player;
-
-public class HealingPotion extends Item{
-	
-	private int duration;
-	private int healPerTurn;
-	
-	public HealingPotion(String name, int quantity, int duration, int healPerTurn) {
-		super(name, quantity);
-		this.duration = duration;
-		this.healPerTurn = healPerTurn;
-	}
-	
-	@Override
-	public void use(Player player) {
-		if(getQuantity() <= 0) {
-			System.out.println("No more Potions available");
-			return;
-		}
-		
-		player.addEffect(new ActiveEffect(getName(), duration, healPerTurn));
-		this.decreaseQuantity();
-		
-		System.out.println("You have used a " + this.getName() + "!");
-		
-		
-		
-	} @Override
-    public String toString() {
-        return "HealingPotion: " + getName()
-                + ", Quantity: " + getQuantity()
-                + ", Duration: " + duration
-                + ", Heal per Turn: " + healPerTurn;
-    }
-
-	
-	
-	
-	
-}
-</file>
-
 <file path="game/.settings/org.eclipse.jdt.core.prefs">
 eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.codegen.methodParameters=do not generate
@@ -618,347 +1230,323 @@ org.eclipse.jdt.core.compiler.release=enabled
 org.eclipse.jdt.core.compiler.source=17
 </file>
 
-<file path="game/src/character/Goblin.java">
-package character;
+<file path="game/src/shop/StartPoint.java">
+package shop;
 
-import inventory.HealingPotion;
-
-public class Goblin extends Monster{
-	
-	public Goblin(String name, int health, int maxHealth, int strength, int agility, int droppedXP) {
-		super(name, health, maxHealth, strength, agility, droppedXP);
-		addDrop(new HealingPotion("Small Healing Potion",1,3, 10));
-	}
-
-	@Override
-	public void lastStance() {
-		if(this.getStrength()<30) {
-			setStrength((int) (getStrength()*1.2));
-		}
-		
-	 
-		
-	}
-}
-</file>
-
-<file path="game/src/inventory/Equipment.java">
-package inventory;
-
-import java.util.ArrayList;
-
-public class Equipment {
-	
-	private Weapon equippedWeapon;
-	private final int DAMAGEUSEITEM = 1;
-	public ArrayList<Weapon> combatGear;
-
-	public Equipment() {
-		combatGear = new ArrayList<>();
-		standardEquipment();
-	}
-
-
-	public void addWeapon(Weapon weapon) {
-		if(combatGear.size()<3) {
-			combatGear.add(weapon);
-		}	
-	}
-	
-	public void displayCombatGear() {
-		    System.out.println("\n=================== 🎒 DEIN KAMPF-INVENTAR ===================");
-		    
-		    // Tabellen-Kopfzeile mit fester Spaltenbreite:
-		    // %-3s  = Index (3 Zeichen Platz, linksbündig)
-		    // %-12s = Name (12 Zeichen Platz)
-		    // %-12s = Haltbarkeit (12 Zeichen Platz)
-		    // %-10s = Schaden (10 Zeichen Platz)
-		    // %-10s = Typ
-		    System.out.printf("   %-3s | %-12s | %-12s | %-10s | %-10s\n", "Nr.", "Weapon", "Durability", "Attack", "Typ");
-		    System.out.println("------------------------------------------------------------");
-
-		    // Alle Waffen aus der Liste durchlaufen
-		    for (int i = 0; i < combatGear.size(); i++) {
-		        Weapon w = combatGear.get(i);
-		        
-		        // Die Haltbarkeit hübsch formatieren (z.B. 498/500)
-		        String durString = w.getDurability() + "/500"; 
-
-		        // Die Zeile für jede Waffe ausgeben
-		        System.out.printf("   [%d] | %-12s | %-12s | +%-9d | %-10s\n", 
-		            i+1, 
-		            w.getName(), 
-		            durString, 
-		            w.getAttack(), 
-		            w.getType()
-		        );
-		    }
-		    System.out.println("============================================================\n");
-		
-		
-		
-	}
-	
-	public void damageCombatItem() {
-		if(this.geteEuippedWeapon() != null) {
-		this.getEquippedWeapon().damageDurability(DAMAGEUSEITEM);
-		}
-	}
-	
-	public void standardEquipment() {
-		Weapon weapon = new Weapon("Sword", 1, 100, 5, "Melee");
-		this.combatGear.add(weapon);
-		this.equipWeapon(weapon);
-	}
-	
-	public void equipWeapon(Weapon weapon) {
-	    if (combatGear.contains(weapon)) {
-	        this.equippedWeapon = weapon;
-	    }
-	}
-	
-	public Weapon getEquippedWeapon() {
-	    return this.equippedWeapon; 
-	}
-	
-	public String getEquippedWeaponName() {
-	    return (equippedWeapon != null) ? equippedWeapon.getName() : "Keine Waffe";
-	}
-	
-	public void showEquippedWeapon() {
-	    System.out.println(getEquippedWeaponName());
-	}
-	
-	public int getIndexCombatGear(String name) {
-		if(name == null || name.isBlank()) {
-			throw new IllegalArgumentException("Weapon name can not be empty!");
-		}
-		for (int i = 0; i < combatGear.size(); i++) {
-	        Weapon w = combatGear.get(i);
-	        if (w.getName().equalsIgnoreCase(name)) {
-	            return i;               // Treffer → Index zurückgeben
-	        }
-	    }
-	    return -1;                      // kein Treffer
-	}
-	
-	public void equipWeaponByIndex(int idx) {
-	    // Sicherheit geht vor: Prüfen, ob der Index in der Liste existiert
-	    if (idx >= 0 && idx < this.combatGear.size()) {
-	        Weapon w = this.combatGear.get(idx);
-	        
-	        // Hier rufst du deine bestehende Logik auf, 
-	        // die die Waffe letztendlich als "aktiv" setzt
-	        this.equipWeapon(w); 
-	        
-	        System.out.println("⚔️ " + w.getName() + " was successfully equipped!");
-	    } else {
-	        System.out.println("❌ Invalid Index! Weapon could not been equipped!.");
-	    }
-	}
-	
-	public Weapon geteEuippedWeapon() {
-		return this.equippedWeapon;
-	}
-		
-		
-
-}
-</file>
-
-<file path="game/src/inventory/UseableItem.java">
-package inventory;
-
-public class UseableItem extends Item{
-	
-	private int durability;
-	
-	public UseableItem() {super();}
-	public UseableItem(String name, int quantity, int durability) {
-		super(name, quantity);
-		this.durability = durability;
-	}
-
-	public int getDurability() {
-		return durability;
-	}
-
-	public void setDurability(int durability) {
-		this.durability = durability;
-	}
-	
-	public void damageDurability(int amount) {
-		if(amount > 0) {
-			//throw new IllegalArgumentException("damage amount must be >= 0");
-		}
-		int newDurability = Math.max(0, this.durability - amount);
-		setDurability(newDurability);
-	}
-
-	@Override
-	public String toString() {
-		return "UsableItem: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability();
-	}
-	
-
-	
-}
-</file>
-
-<file path="game/src/inventory/Weapon.java">
-package inventory;
-
-public class Weapon extends UseableItem {
-	private int attack;
-	private String type;
-
-	public Weapon() {super();}
-
-	
-	public Weapon(String name, int quantity, int durability, int attack, String type) {
-		super(name, quantity, durability);
-		this.attack = attack;
-		this.setType(type);
-		
-		
-	}
-	
-
-	public int getAttack() {
-		return attack;
-	}
-
-	public void setAttack(int attack) {
-		this.attack = attack;
-	}
-	
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	@Override
-	public String toString() {
-		return "Weapon: " + getName() + ", Quantity: " + getQuantity() +  ", Durability: " + getDurability() + ", Attack: " + this.attack+", Type: " + this.type;
-	}
-
-	
-}
-</file>
-
-<file path="game/src/persistence/SaveGameManager.java">
-package persistence;
-
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.Scanner;
 
 import character.Player;
-import inventory.Fruit;
-import inventory.HealingPotion;
-import inventory.Item;
-import inventory.Weapon;
-import util.RuntimeTypeAdapterFactory;
+import persistence.SaveGameManager;
+import util.AutoSave;
+import util.InputHelper;
 
-public class SaveGameManager {
+/**
+ * Represents the main hub of the game.
+ * Players can access the shop, manage their character,
+ * view inventory information and enter the dungeon.
+ */
 
-    private final Gson gson;
-    private final String fileName = "savegame.json";
+public class StartPoint {
+	
+	private Scanner scanner = new Scanner(System.in);
+	private Shop shop = new Shop();
+	
+	private InputHelper input = new InputHelper();
+	
+	/**
+	 * Creates a new start point and initializes the shop.
+	 */
+	
+	public StartPoint() {
+		
+	}
+	
+	
+	/**
+	 * Displays the main menu and handles player actions.
+	 *
+	 * @param player the current player
+	 * @return true if the player chooses to enter the dungeon,
+	 *         false if the player exits the game
+	 */
+	
+	public boolean enter(Player player) {
+		
+		boolean running = true;
+		
+		while(running) {
+			System.out.println("\n===== START POINT =====");
+            System.out.println("1. Open Shop");
+            System.out.println("2. Enter Dungeon");
+            System.out.println("3. Inventory");
+            System.out.println("4. Sort Inventory");
+            System.out.println("5. Character");
+            System.out.println("6. Upgrade Stats");
+            System.out.println("7. Save");
+            System.out.println("8. Exit");
+			
+			int choice = input.readInt(">");
+			
+			switch(choice) {
+			case 1:
+				shop.open(player);
+				break;
+			case 2:
+				return true;
+			case 3:
+				player.getInventory().displayInventory();
+				player.equipment.displayCombatGear();
+				break;
+			case 4:
+				player.normalInventory.sortInventoryAlphabetically();
+				player.normalInventory.displayInventory();
+				break;
+			case 5:
+				player.displayStatus();
+				break;
+			case 6:
+				this.upgradeStats(player);
+				AutoSave.save(player);
+				break;
+			case 7:
+				AutoSave.save(player);
+				break;
+			case 8:
+				AutoSave.save(player);
+				return false;	
+			default:
+				System.out.println("Invalid choice");
+				
+			}
+			
+		}
+		return false;
+	}
+	
+	/**
+	 * Allows the player to spend available stat points
+	 * to improve character attributes.
+	 *
+	 * @param player the player upgrading their stats
+	 */
+	
+	private void upgradeStats(Player player) {
+		
+		System.out.println("\n===== UPGRADE =====");
 
-    public SaveGameManager() {
-        RuntimeTypeAdapterFactory<Item> itemAdapter =
-                RuntimeTypeAdapterFactory.of(Item.class, "type")
-                        .registerSubtype(HealingPotion.class, "healingPotion")
-                        .registerSubtype(Fruit.class, "fruit")
-                        .registerSubtype(Weapon.class, "weapon");
+	    System.out.println("Available Points: " + player.getStatPoints());
+	    
+	    System.out.println("1. Strength");
+	    System.out.println("2. Agility");
+	    System.out.println("3. Max Health");
+	    
+	    int choice = input.readInt(">");
+	    
+	    player.spendStatPoint(choice);
+	    
+	}
+	
 
-        this.gson = new GsonBuilder()
-                .registerTypeAdapterFactory(itemAdapter)
-                .setPrettyPrinting()
-                .create();
-    }
-
-    public void savePlayer(Player player) {
-        try (FileWriter writer = new FileWriter(fileName)) {
-            gson.toJson(player, writer);
-            System.out.println("💾 Spielstand erfolgreich in '" + fileName + "' gespeichert!");
-        } catch (IOException e) {
-            System.err.println("❌ Fehler beim Speichern: " + e.getMessage());
-        }
-    }
-
-    public Player loadPlayer() {
-        try (FileReader reader = new FileReader(fileName)) {
-            Player loaded = gson.fromJson(reader, Player.class);
-            System.out.println("📂 Spielstand erfolgreich geladen!");
-            return loaded;
-        } catch (IOException e) {
-            System.out.println("ℹ️ Kein Spielstand gefunden. Ein neuer Charakter wird erstellt.");
-            return null;
-        }
-    }
 }
 </file>
 
-<file path="game/src/character/Monster.java">
-package character;
+<file path="game/src/shop/Shop.java">
+package shop;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
-import inventory.Item;
+import character.Player;
+import items.Bandage;
+import items.HealingPotion;
+import items.Item;
+import items.Weapon;
+import util.AutoSave;
+import util.InputHelper;
 
-public abstract class Monster extends Character{
+/**
+ * Represents the in-game shop.
+ * Players can buy and sell items and weapons using gold.
+ */
+
+public class Shop {
 	
-	private int droppedXP;
-	private ArrayList<Item> droppedItems;
+	private ArrayList<Item> shopItems = new ArrayList<>();
+	private Scanner scanner = new Scanner(System.in);
+	private InputHelper input = new InputHelper();
 	
-	public Monster(String name, int health, int maxHealth, int strength, int agility,  int droppedXP) {
-		super(name, health, maxHealth, strength, agility);
-		this.setDroppedXP(droppedXP);
-		this.droppedItems = new ArrayList<>();
-	}
-	
-
-
-
-	@Override
-	public String toString() {
-		return "Name: " + getName() + "\n" +
-				"Health: " + getHealth() + "/" + getMaxHealth() + "\n" +
-				"Strength: " + getStrength() + "\n";
-				
-				
-	}
-
-
-	@Override
-	public int calculateTotalDamage() {
-				return this.getStrength();
-	}
-	public abstract void lastStance();
-	
-
-	public int getDroppedXP() {
-		return droppedXP;
-	}
-	public void addDrop(Item item) {
-		this.droppedItems.add(item);
-	}
-
-
-	public void setDroppedXP(int droppedXP) {
-		this.droppedXP = droppedXP;
+	/**
+	 * Creates a new shop and initializes the available products.
+	 */
+	 
+	public Shop() {
+		shopItems.add(new HealingPotion("Small Healing Potion", 3, 10, 3, 10));
+		shopItems.add(new Bandage("Small Bandage", 2, 15, 25));
+		shopItems.add(new Bandage("Large Bandage", 2, 30, 30));
+		shopItems.add(new Weapon("Long Sword", 1, 100, 200, 25, "Close Combat"));
+		shopItems.add(new Weapon("Knight Sword", 1, 150, 300, 50, "Close combat" ));
+		shopItems.add(new Weapon("Dragon Slayer", 1, 350, 400, 70, "Close combat" ));
 	}
 	
-	public ArrayList<Item> getDroppedItems(){
-		return droppedItems;
+	/**
+	 * Opens the shop menu and allows the player to buy or sell items.
+	 *
+	 * @param player the player interacting with the shop
+	 */
+	
+	public void open(Player player) {
+		
+		boolean running = true;
+		while(running) {
+			System.out.println("\n===== SHOP =====");
+            System.out.println("Gold: " + player.getGold());
+            System.out.println("1. Buy Item");
+            System.out.println("2. Sell Inventory Item");
+            System.out.println("3. Sell Combat Inventory Item");
+            System.out.println("4. Leave Shop");
+            
+            int choice = input.readInt(">");
+            
+            switch(choice) {
+            case 1:
+            	this.buyItem(player);
+            	AutoSave.save(player);
+            	break;
+            case 2:
+            	this.sellItem(player);
+            	AutoSave.save(player);
+            	break;
+            case 3:
+            	this.sellWeapon(player);
+            	AutoSave.save(player);
+            	break;
+            case 4:
+            	running = false;
+            	break;
+            default: 
+            	System.out.println("Invalid choice");	
+            }
+		}
 	}
+	
+	/**
+	 * Allows the player to purchase an item from the shop.
+	 * The item's cost is deducted from the player's gold.
+	 *
+	 * @param player the player buying the item
+	 */
+	
+	private void buyItem(Player player) {
+		
+		System.out.println("\nItems for sale: ");
+		
+		for(int i = 0;i < this.shopItems.size();i++) {
+			Item item = shopItems.get(i);
+			
+			System.out.printf("%d. %s x%d - %d Gold%n",
+		            i + 1,
+		            item.getName(),
+		            item.getQuantity(),
+		            item.getWorth());
+			
+		}
+		
+		
+		
+		int choice = input.readInt(">") - 1;
+		
+		if(choice >= 0 && choice < this.shopItems.size()) {
+			Item item = this.shopItems.get(choice);
+			int price = item.getWorth() * item.getQuantity();
+			if(player.getGold() < price) {
+				System.out.println("You cann not afford this item!");
+				return;
+			}
+			
+			if(item instanceof Weapon weapon) {
+				player.equipment.addWeapon(new Weapon(
+												weapon.getName(),
+												weapon.getQuantity(),
+												weapon.getWorth(),
+												weapon.getDurability(),
+												weapon.getAttack(),
+												weapon.getType()
+												));
+												
+			}
+			else {
+				player.normalInventory.addItem(item);					
+			}	
+			System.out.println("Bought: " + item.getName());
+			player.setGold(player.getGold() - price);
+		}
+		
+	}
+	
+	/**
+	 * Allows the player to sell an item from their inventory.
+	 * The player receives the item's gold value.
+	 *
+	 * @param player the player selling the item
+	 */
+	
+	private void sellItem(Player player) {
+		player.normalInventory.displayInventory();
+		
+		System.out.println("Which Item do you want to sell?");
+		
+		int itemidx = input.readInt(">");
+		
+		Item item = player.normalInventory.getItemByIndex(itemidx -1);
+		
+		if(item != null) {
+			player.normalInventory.deleteItem(item);
+			player.setGold(player.getGold() + (item.getWorth() * item.getQuantity()));
+			
+			System.out.println("Sold: " + item.getName());
+		} else {
+			System.out.println("Item not found");
+		}
+	}
+	
+	/**
+	 * Allows the player to sell a weapon from the combat inventory.
+	 * Equipped weapons cannot be sold.
+	 *
+	 * @param player the player selling the weapon
+	 */
+	
+	private void sellWeapon(Player player) {
+		player.equipment.displayCombatGear();
+		
+		System.out.println("Which weapon do you want to sell");
+		int choice = input.readInt(">")-1;
+		Weapon weapon = (Weapon) player.equipment.getCombatGear().get(choice);
+		
+		/*System.out.println("Selected: " + weapon.getName());
+		System.out.println("Equipped: " + player.equipment.getEquippedWeapon().getName());
+
+		System.out.println(
+		    player.equipment.getEquippedWeapon() == weapon
+		);*/
+		
+		
+		if(this.compareWeaponNames(player, weapon)) {
+			System.out.println("You cannot sell your equipped weapon!");
+			return;
+		}
+		if(weapon != null) {
+			player.equipment.deleteCombatGear(choice);
+			player.setGold(player.getGold() + weapon.getWorth());
+			System.out.println("Sold: " + weapon.getName());
+		}
+		
+	}
+		
+	private boolean compareWeaponNames(Player player, Weapon weapon) {
+		return player.equipment.geteEuippedWeapon().getName().equalsIgnoreCase(weapon.getName());
+	}
+	
 }
 </file>
 
@@ -966,14 +1554,27 @@ public abstract class Monster extends Character{
 package combat;
 
 
-import character.Monster;
 import character.Player;
+import monster.Monster;
 
+
+/**
+ * Handles the combat logic between the player and a monster.
+ * Controls turns, attacks, damage calculation and battle state.
+ */
 
 public class CombatEngine{
 	private Player player;
 	private Monster monster;
 	private boolean isPlayerTurn = true;
+	
+	 /**
+     * Creates a new combat engine for a fight between a player and a monster.
+     *
+     * @param player  the player participating in the battle
+     * @param monster the monster participating in the battle
+     */
+	
 	
 	public CombatEngine(Player player, Monster monster) {
 		this.player = player;
@@ -982,6 +1583,14 @@ public class CombatEngine{
 		health = player.getMaxHealth();
 		player.setHealth(health);
 	}
+	
+	 /**
+     * Executes an attack for the current turn.
+     * If it is the player's turn, active effects are applied and the monster takes damage.
+     * If it is the monster's turn, the player may dodge the attack.
+     *
+     * @return the amount of damage dealt
+     */
 	
 
 	public int executeAttack() {
@@ -1010,12 +1619,25 @@ public class CombatEngine{
 			return damage;
 			}	
 	
+	
+	/**
+     * Checks whether the battle is over.
+     *
+     * @return true if either the player or the monster is defeated
+     */
+	
 	public boolean isBattleOver() {
 		if(player.isAlive() == true && monster.isAlive() == true) 
 			return false;
 		else
 			return true;
 	}
+	
+	/**
+     * Calculates the monster's current health percentage.
+     *
+     * @return monster health as a value between 0.0 and 1.0
+     */
 	
 	public float hpPercentage() {
 		return monster.getHealth() / monster.getMaxHealth();
@@ -1053,53 +1675,297 @@ public class CombatEngine{
 }
 </file>
 
-<file path="game/src/inventory/Item.java">
+<file path="game/src/inventory/Equipment.java">
 package inventory;
 
+import java.util.ArrayList;
+
+import items.Weapon;
+
+/**
+ * Manages the player's combat equipment.
+ * Handles weapon storage, equipping weapons and durability loss.
+ */
+
+public class Equipment {
+	
+	private Weapon equippedWeapon;
+	private final int DAMAGEUSEITEM = 1;
+	public ArrayList<Weapon> combatGear;
+
+	/**
+	 * Creates a new equipment inventory and adds the default weapon.
+	 */
+	
+	public Equipment() {
+		combatGear = new ArrayList<>();
+		standardEquipment();
+	}
+
+	/**
+	 * Adds a weapon to the combat inventory.
+	 * A maximum of three weapons can be stored.
+	 *
+	 * @param weapon the weapon to add
+	 */
+	
+	public void addWeapon(Weapon weapon) {
+		if(combatGear.size()<3) {
+			combatGear.add(weapon);
+		}	
+	}
+	
+	/**
+	 * Displays all weapons currently stored in the combat inventory.
+	 */
+	
+	public void displayCombatGear() {
+		    System.out.println("\n=================== Combat Inventory ===================");
+		    
+		    // Tabellen-Kopfzeile mit fester Spaltenbreite:
+		    // %-3s  = Index (3 Zeichen Platz, linksbündig)
+		    // %-12s = Name (12 Zeichen Platz)
+		    // %-12s = Haltbarkeit (12 Zeichen Platz)
+		    // %-10s = Schaden (10 Zeichen Platz)
+		    // %-10s = Typ
+		    System.out.printf("   %-3s | %-12s | %-12s | %-10s | %-10s\n", "Nr.", "Weapon", "Durability", "Attack", "Typ");
+		    System.out.println("------------------------------------------------------------");
+
+		    // Alle Waffen aus der Liste durchlaufen
+		    for (int i = 0; i < combatGear.size(); i++) {
+		        Weapon w = combatGear.get(i);
+		        
+		        // Die Haltbarkeit hübsch formatieren (z.B. 498/500)
+		        String durString = w.getDurability() + "/500"; 
+
+		        // Die Zeile für jede Waffe ausgeben
+		        System.out.printf("   [%d] | %-12s | %-12s | +%-9d | %-10s\n", 
+		            i+1, 
+		            w.getName(), 
+		            durString, 
+		            w.getAttack(), 
+		            w.getType()
+		        );
+		    }
+		    System.out.println("============================================================\n");
+		
+		
+		
+	}
+
+	/**
+	 * Reduces the durability of the currently equipped weapon.
+	 */
+	
+	public void damageCombatItem() {
+		if(this.geteEuippedWeapon() != null) {
+		this.getEquippedWeapon().damageDurability(DAMAGEUSEITEM);
+		}
+	}
+	
+	/**
+	 * Removes a weapon from the combat inventory.
+	 *
+	 * @param idx index of the weapon to remove
+	 */
+	
+	
+	public void deleteCombatGear(int idx) {
+		this.combatGear.remove(idx);
+	}
+	
+	/**
+	 * Creates and equips the player's starting weapon.
+	 */
+	
+	public void standardEquipment() {
+		Weapon weapon = new Weapon("Sword", 1, 10, 100, 5, "Melee");
+		this.combatGear.add(weapon);
+		this.equipWeapon(weapon);
+	}
+	
+	/**
+	 * Equips a weapon from the combat inventory.
+	 *
+	 * @param weapon the weapon to equip
+	 */
+	
+	public void equipWeapon(Weapon weapon) {
+	    if (combatGear.contains(weapon)) {
+	        this.equippedWeapon = weapon;
+	    }
+	}
+	
+	/**
+	 * Returns the currently equipped weapon.
+	 *
+	 * @return equipped weapon or null if no weapon is equipped
+	 */
+	
+	public Weapon getEquippedWeapon() {
+	    return this.equippedWeapon; 
+	}
+	
+	/**
+	 * Returns the name of the currently equipped weapon.
+	 *
+	 * @return weapon name or "Keine Waffe" if none is equipped
+	 */
+	
+	public String getEquippedWeaponName() {
+	    return (equippedWeapon != null) ? equippedWeapon.getName() : "Keine Waffe";
+	}
+	
+	/**
+	 * Prints the name of the currently equipped weapon.
+	 */
+	
+	public void showEquippedWeapon() {
+	    System.out.println(getEquippedWeaponName());
+	}
+	
+	/**
+	 * Searches for a weapon by name and returns its index.
+	 *
+	 * @param name name of the weapon
+	 * @return index of the weapon or -1 if not found
+	 * @throws IllegalArgumentException if the name is empty
+	 */
+	
+	public int getIndexCombatGear(String name) {
+		if(name == null || name.isBlank()) {
+			throw new IllegalArgumentException("Weapon name can not be empty!");
+		}
+		for (int i = 0; i < combatGear.size(); i++) {
+	        Weapon w = combatGear.get(i);
+	        if (w.getName().equalsIgnoreCase(name)) {
+	            return i;              
+	        }
+	    }
+	    return -1;                      
+	}
+	
+	/**
+	 * Equips a weapon based on its position in the combat inventory.
+	 *
+	 * @param idx index of the weapon to equip
+	 */
+	
+	public void equipWeaponByIndex(int idx) {
+	    
+	    if (idx >= 0 && idx < this.combatGear.size()) {
+	        Weapon w = this.combatGear.get(idx);
+	        
+	        
+	        this.equipWeapon(w); 
+	        
+	        System.out.println("⚔️ " + w.getName() + " was successfully equipped!");
+	    } else {
+	        System.out.println("❌ Invalid Index! Weapon could not been equipped!.");
+	    }
+	}
+	
+	public Weapon geteEuippedWeapon() {
+		return this.equippedWeapon;
+	}
+
+
+	public ArrayList<Weapon> getCombatGear() {
+		return combatGear;
+	}
+
+
+	public void setCombatGear(ArrayList<Weapon> combatGear) {
+		this.combatGear = combatGear;
+	}
+	
+	
+		
+		
+
+}
+</file>
+
+<file path="game/src/persistence/SaveGameManager.java">
+package persistence;
+
+import java.io.FileReader;
+import com.google.gson.JsonSyntaxException;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import character.Player;
+import items.Bandage;
+import items.BossGoblinCrown;
+import items.DragonScale;
+import items.Fruit;
+import items.GoblinTotem;
+import items.HealingPotion;
+import items.Item;
+import items.OrcTusk;
+import items.StrengthPotion;
+import items.VampireCloak;
+import items.Weapon;
+import monster.Vampire;
 
-public abstract class Item {
-	
-	private String name;
-	private int quantity;
-	
-	public Item() {}
-	public Item(String name, int quantity) {
-		this.name = name;
-		this.quantity = quantity;
+public class SaveGameManager {
 
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public int getQuantity() {
-		return quantity;
-	}
+    private final Gson gson;
+    private final String fileName = "savegame.json";
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public SaveGameManager() {
+        RuntimeTypeAdapterFactory<Item> itemAdapter =
+                RuntimeTypeAdapterFactory.of(Item.class, "type")
+                        .registerSubtype(HealingPotion.class, "healingPotion")
+                        .registerSubtype(Fruit.class, "fruit")
+                        .registerSubtype(Weapon.class, "weapon")
+                        .registerSubtype(Bandage.class, "bandage")
+                        .registerSubtype(GoblinTotem.class, "goblintotem")
+        				.registerSubtype(OrcTusk.class, "orctusk")
+        				.registerSubtype(VampireCloak.class, "vampirecloak")
+        				.registerSubtype(BossGoblinCrown.class, "bossgoblincrown")
+        				.registerSubtype(DragonScale.class, "dragonscale");
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-	public void decreaseQuantity() {
-		if(this.quantity > 0 )
-			this.quantity--;
-	}
-	
-	
-	@Override
-	public String toString() {
-	    return name + " x" + quantity;
-	}
-	
-	public void use(Player player) {
-		System.out.println(this.name + " cannot be used.");
-	}
+        this.gson = new GsonBuilder()
+                .registerTypeAdapterFactory(itemAdapter)
+                .setPrettyPrinting()
+                .create();
+    }
+    
+    /**
+     * Writes the player data to the save file.
+     *
+     * @param player the player to save
+     */
 
+    public void savePlayer(Player player) {
+        try (FileWriter writer = new FileWriter(fileName)) {
+            gson.toJson(player, writer);
+            System.out.println("💾 Progress saved!");
+        } catch (IOException e) {
+            System.err.println("❌ Failed to save game: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Loads the player from the save file.
+     *
+     * @return the loaded player or null if no save file exists
+     */
+
+    public Player loadPlayer() {
+        try (FileReader reader = new FileReader(fileName)) {
+            Player loaded = gson.fromJson(reader, Player.class);
+            System.out.println("📂 Game loaded!");
+            return loaded;
+        } catch (IOException | JsonSyntaxException e) {
+            System.out.println("ℹ️ No save file found. Creatin a new Character");
+            return null;
+        }
+    }
 }
 </file>
 
@@ -1122,16 +1988,33 @@ package character;
 
 import java.util.Random;
 
+
+/**
+ * Abstract base class for all characters in the game.
+ * Stores common attributes such as health, strength and agility.
+ * Extended by Player and Monster.
+ */
+
 public abstract class Character {
 
 	private final String name;
 	private int health;
-	private final int maxHealth;
+	private int maxHealth;
 	private boolean alive;
 	private int strength;
 	private int agility;
 	
 	private static final Random random = new Random();
+	
+	/**
+	 * Creates a new character.
+	 *
+	 * @param name character name
+	 * @param health current health points
+	 * @param maxHealth maximum health points
+	 * @param strength attack strength
+	 * @param agility agility used for dodge chance
+	 */
 
 	public Character(String name, int health, int maxHealth, int strength, int agility) {
 		this.name = name;
@@ -1142,16 +2025,36 @@ public abstract class Character {
 		this.agility = agility;
 	}
 	
+	/**
+	 * Reduces the character's health by the given damage amount.
+	 * Health cannot fall below zero.
+	 *
+	 * @param damage damage received
+	 */
 
 	public void takesDamage(int damage) {
 		health = Math.max(0, health - damage);
 		alive = health > 0;
 	}
+	
+	/**
+	 * Restores health points.
+	 * Health cannot exceed the maximum health value.
+	 *
+	 * @param amount amount of health restored
+	 */
 
 	public void heal(int amount) {
 		health = Math.min(maxHealth, health + amount);
 		alive = health > 0;
 	}
+	
+	/**
+	 * Determines whether the character successfully dodges an attack.
+	 * The dodge chance is based on agility.
+	 *
+	 * @return true if the attack is dodged, otherwise false
+	 */
 	
 	public boolean canDodge() {
 		int dodgeChance = Math.min(this.getAgility()*5, 50);
@@ -1159,9 +2062,19 @@ public abstract class Character {
 		return roll < dodgeChance;
 	}
 	
-	
+	/**
+	 * Calculates the total damage dealt by the character.
+	 *
+	 * @return total damage value
+	 */
 
 	public abstract int calculateTotalDamage();
+	
+	/**
+	 * Checks whether the character is still alive.
+	 *
+	 * @return true if health is above zero
+	 */
 
 	public boolean isAlive() {
 		return health > 0;
@@ -1181,6 +2094,10 @@ public abstract class Character {
 
 	public int getMaxHealth() {
 		return maxHealth;
+	}
+	
+	public void setMaxHealth(int maxHealth) {
+		this.maxHealth = maxHealth;
 	}
 
 	public int getStrength() {
@@ -1213,21 +2130,37 @@ package combat;
 
 import java.util.Scanner;
 
-import character.Monster;
 import character.Player;
 import inventory.Equipment;
-import inventory.HealingPotion;
-import inventory.Item;
-import inventory.Weapon;
+import items.HealingPotion;
+import items.Item;
+import items.Weapon;
+import monster.Monster;
+
+
+/**
+ * Handles the user interface for battles.
+ * Displays battle status and processes player combat actions.
+ */
 
 public class CombatView {
 
 	private CombatEngine engine;
 	private Scanner scanner = new Scanner(System.in);
 	
+	/**
+     * Creates a new combat view for a combat engine.
+     *
+     * @param engine the combat engine controlling the battle
+     */
+	
 	public CombatView(CombatEngine engine) {
 		this.engine = engine;
 	}
+	
+	/**
+     * Starts the battle loop until the player or monster is defeated.
+     */
 	
 	public void startBattle() {
 		System.out.println("Kampf beginnt " + engine.getPlayer().getName() + " vs " + engine.getMonster().getName()); 
@@ -1266,10 +2199,24 @@ public class CombatView {
 	
 	}	
 	
+	 /**
+     * Displays damage dealt by an attacker.
+     *
+     * @param name   attacker name
+     * @param damage dealt damage
+     */
 	
 	public void showDamageAndHealth(String name, int damage, int health) {
 		System.out.println(name +" did " + damage + " damage with his attack!");
 	}
+	
+	/**
+     * Generates a visual health bar.
+     *
+     * @param currentHP current health
+     * @param maxHP     maximum health
+     * @return formatted health bar
+     */
 	
 	public String generateHeathBar(float currentHP, float maxHP) {
 		int barLength = 10;
@@ -1291,6 +2238,10 @@ public class CombatView {
 		return bar.toString();
 	}
 	
+	/**
+     * Prints a compact status dashboard.
+     */
+	
 	private void printStatusDashboard() {
 		System.out.println("\n=================== STATUS ===================");
 		
@@ -1303,6 +2254,10 @@ public class CombatView {
 		System.out.println("==============================================");	
 		
 	}
+	
+	/**
+     * Displays the current combat status of player and monster.
+     */
 	
 	public void displayStatus() {
 
@@ -1329,7 +2284,9 @@ public class CombatView {
 	}
 	
 	
-	
+	/**
+     * Reads and handles the player's combat action.
+     */
 	
 	
 	public void handlePlayerInput() {
@@ -1368,6 +2325,10 @@ public class CombatView {
 		}
 	}
 	
+	/**
+     * Allows the player to switch the equipped weapon.
+     */
+	
 	public void handleWeaponSwitch() {
 		System.out.println("\n==============================================");
 	    System.out.println("🔄  Weapon Switch");
@@ -1396,9 +2357,13 @@ public class CombatView {
 	    
 	}
 	
+	/**
+     * Allows the player to use an item from the inventory.
+     */
+	
 	public void handlePotionUse() {
 		engine.getPlayer().getInventory().displayInventory();
-		System.out.println("Which Potion do you want to use?");
+		System.out.println("Which Item do you want to use?");
 		System.out.println(">");
 		
 		try {
@@ -1408,11 +2373,11 @@ public class CombatView {
 			Item item = engine.getPlayer().normalInventory.getItemByIndex(choice-1);
 		
 			if(item != null) {
-				System.out.println("DEBUG item class: " + item.getClass().getName());
+				//System.out.println("DEBUG item class: " + item.getClass().getName());
 				item.use(engine.getPlayer());
 			
 				if(item.getQuantity() == 0) {
-					engine.getPlayer().normalInventory.deleteItem(item.getName());
+					engine.getPlayer().normalInventory.deleteItem(item);
 				}
 			
 				engine.setPlayerTurn(false);		
@@ -1473,19 +2438,46 @@ package inventory;
 
 import java.util.ArrayList;
 
+import items.Item;
+import items.UseableItem;
+
+
+/**
+ * Represents the player's inventory.
+ * Stores items and provides methods for adding, removing,
+ * searching and displaying inventory contents.
+ */
+
 public class Inventory {
 	public String showInventory = null;
 	private ArrayList<Item> items;
 	private final int MAX_SPACE = 30;
 	
+	/**
+	 * Creates an empty inventory.
+	 */
+	
+	
 	public Inventory() {
 		items = new ArrayList<>();
 	}
+	
+	/**
+	 * Checks whether the inventory has free space available.
+	 *
+	 * @return true if the inventory is not full, otherwise false
+	 */
 	
 	public boolean hasFreeSpace() {
 		if(this.items.size()<= MAX_SPACE) return true;
 		else return false;
 	}
+	
+	/**
+	 * Adds an item to the inventory if free space is available.
+	 *
+	 * @param item the item to add
+	 */
 	
 	public void addItem(Item item) {
 		if(this.hasFreeSpace() == true) {
@@ -1493,6 +2485,13 @@ public class Inventory {
 			//System.out.println("Item erfolgreich aufgenommen!");
 		}
 	}	
+	
+	/**
+	 * Uses an item by reducing its quantity by one.
+	 *
+	 * @param name name of the item to use
+	 */
+	
 	public void useItem(String name) {	
 			for(Item item : items) {
 				if(item.getName().equals(name)) {
@@ -1500,6 +2499,13 @@ public class Inventory {
 			}
 		}
 	}
+	
+	/**
+	 * Searches for an item by name.
+	 *
+	 * @param name name of the item
+	 * @return the matching item or null if not found
+	 */
 	
 	public Item findItem(String name) {
 		Item m = null;
@@ -1513,6 +2519,13 @@ public class Inventory {
 		return m;
 	}
 	
+	/**
+	 * Returns an item at the specified inventory position.
+	 *
+	 * @param idx inventory index
+	 * @return the item at the index or null if the index is invalid
+	 */
+	
 	public Item getItemByIndex(int idx) {
 
 	    if(idx >= 0 && idx < items.size()) {
@@ -1521,6 +2534,13 @@ public class Inventory {
 
 	    return null;
 	}
+	
+	/**
+	 * Reduces the durability of a usable item.
+	 *
+	 * @param name name of the item
+	 * @param amount durability damage
+	 */
 	
 	public void damageItem(String name, int amount) {
 		 Item item = findItem(name);
@@ -1531,10 +2551,27 @@ public class Inventory {
 		 
 	}
 	
-	public void deleteItem(String name) {
-		items.remove(findItem(name));
+	/**
+	 * Removes an item from the inventory.
+	 *
+	 * @param item item to remove
+	 */
+	
+	public void deleteItem(Item item) {
+		items.remove(item);
 	}
 	
+	/**
+	 * Removes all items with a quantity of zero or less.
+	 */
+		
+	public void removeEmptyItem() {
+		items.removeIf(item -> item.getQuantity() <= 0);
+	}
+	
+	/**
+	 * Displays all items currently stored in the inventory.
+	 */
 	
 	public void displayInventory() {
 
@@ -1551,6 +2588,15 @@ public class Inventory {
 
 	    System.out.println("=============================");
 	}
+	
+	/**
+	 * Sorts all items in the inventory alphabetically by name.
+	 * Uppercase and lowercase letters are ignored.
+	 */
+	
+	public void sortInventoryAlphabetically() {
+	    items.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+		}
 		
 		
 	}
@@ -1564,7 +2610,118 @@ public class Inventory {
         "duration": 3,
         "healPerTurn": 10,
         "name": "Small Healing Potion",
-        "quantity": 3,
+        "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "name": "Goblin Totem",
+        "quantity": 1,
+        "worth": 50,
+        "type": "goblintotem"
+      },
+      {
+        "name": "Goblin Crown",
+        "quantity": 1,
+        "worth": 300,
+        "type": "bossgoblincrown"
+      },
+      {
+        "name": "Orc Tusk",
+        "quantity": 1,
+        "worth": 100,
+        "type": "orctusk"
+      },
+      {
+        "name": "Vampire Cloak",
+        "quantity": 1,
+        "worth": 250,
+        "type": "vampirecloak"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 50,
+        "name": "Large Healing Potion",
+        "quantity": 1,
+        "worth": 50,
+        "type": "healingPotion"
+      },
+      {
+        "healAmount": 15,
+        "name": "Small Bandage",
+        "quantity": 2,
+        "worth": 25,
+        "type": "bandage"
+      },
+      {
+        "healAmount": 30,
+        "name": "Large Bandage",
+        "quantity": 0,
+        "worth": 30,
+        "type": "bandage"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "name": "Goblin Totem",
+        "quantity": 1,
+        "worth": 50,
+        "type": "goblintotem"
+      },
+      {
+        "name": "Goblin Crown",
+        "quantity": 1,
+        "worth": 300,
+        "type": "bossgoblincrown"
+      },
+      {
+        "name": "Orc Tusk",
+        "quantity": 1,
+        "worth": 100,
+        "type": "orctusk"
+      },
+      {
+        "name": "Vampire Cloak",
+        "quantity": 1,
+        "worth": 250,
+        "type": "vampirecloak"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 50,
+        "name": "Large Healing Potion",
+        "quantity": 2,
+        "worth": 50,
         "type": "healingPotion"
       }
     ],
@@ -1572,41 +2729,45 @@ public class Inventory {
   },
   "equipment": {
     "equippedWeapon": {
-      "attack": 5,
+      "attack": 70,
       "type": "weapon",
-      "durability": 89,
-      "name": "Sword",
-      "quantity": 1
+      "durability": 377,
+      "name": "Dragon Slayer",
+      "quantity": 1,
+      "worth": 350
     },
     "DAMAGEUSEITEM": 1,
     "combatGear": [
       {
         "attack": 5,
         "type": "weapon",
-        "durability": 89,
+        "durability": 100,
         "name": "Sword",
-        "quantity": 1
+        "quantity": 1,
+        "worth": 10
       },
       {
-        "attack": 5,
+        "attack": 70,
         "type": "weapon",
-        "durability": 498,
-        "name": "Bow",
-        "quantity": 100
+        "durability": 390,
+        "name": "Dragon Slayer",
+        "quantity": 1,
+        "worth": 350
       }
     ]
   },
   "race": "Human",
-  "level": 1,
-  "xp": 500,
-  "max_xp": 1000,
-  "gold": 110,
-  "name": "domi",
+  "level": 6,
+  "xp": 6000,
+  "max_xp": 6400,
+  "gold": 985,
+  "statPoints": 1,
+  "name": "Domi",
   "health": 0,
-  "maxHealth": 100,
+  "maxHealth": 110,
   "alive": false,
-  "strength": 10,
-  "agility": 5
+  "strength": 12,
+  "agility": 6
 }
 </file>
 
@@ -1615,9 +2776,16 @@ package character;
 
 import java.util.ArrayList;
 
+
 import inventory.Equipment;
 import inventory.Inventory;
-import inventory.Weapon;
+import items.Weapon;
+
+
+/**
+ * Represents the player character.
+ * Stores inventory, equipment, stats, experience and active effects.
+ */
 
 public class Player extends Character{
 	
@@ -1629,8 +2797,9 @@ public class Player extends Character{
 	private String race;
 	private int level;
 	private int xp;
-	private int max_xp = 1000;
+	private int max_xp = 200;
 	private int gold;
+	private int statPoints = 0;
 	
 	public Player(){
 		super("Unbekannter Held", 100, 100, 10, 10);
@@ -1645,7 +2814,9 @@ public class Player extends Character{
 		this.equipment = new Equipment();
 	}
 	
-
+	/**
+     * Sets the starting values for a new player.
+     */
 	
 	public void startStatus() {
 		this.level = 1;
@@ -1655,7 +2826,11 @@ public class Player extends Character{
 		
 	}
 	
-	
+	/**
+     * Calculates the player's total damage including equipped weapon damage.
+     *
+     * @return total damage dealt by the player
+     */
 
 	
 	public int calculateTotalDamage() {
@@ -1667,9 +2842,19 @@ public class Player extends Character{
 		return total;
 	}
 	
+	/**
+	 * Adds a temporary effect to the player.
+	 *
+	 * @param effect the effect that should be applied
+	 */
+	
 	public void addEffect(ActiveEffect effect) {
 		activeEffects.add(effect);
 	}
+	
+	/**
+	 * Applies all active effects and removes expired effects.
+	 */
 	
 	public void applyEffects() {
 		for(int i = activeEffects.size() -1; i >= 0; i--) {
@@ -1685,9 +2870,63 @@ public class Player extends Character{
 		}
 	}
 	
+	/**
+     * Displays the player's current status.
+     */
 	
+	public void displayStatus() {
+	    System.out.println("\n========== CHARACTER ==========");
+	    System.out.println("Name:      " + this.getName());
+	    System.out.println("Race:      " + this.getRace());
+	    System.out.println("Level:     " + this.level);
+	    System.out.println("XP:        " + this.xp + "/" + this.max_xp);
+	    System.out.println("Gold:      " + this.gold);
+	    System.out.println("Health:    " + this.getHealth() + "/" + this.getMaxHealth());
+	    System.out.println("Strength:  " + this.getStrength());
+	    System.out.println("Agility:   " + this.getAgility());
+
+	    if(equipment.getEquippedWeapon() != null) {
+	        System.out.println("Weapon:    "
+	                + equipment.getEquippedWeapon().getName());
+	    }
+
+	}
 	
+	/**
+     * Uses one available stat point to increase a selected player attribute.
+     *
+     * @param choice selected attribute:
+     *               1 = strength, 2 = agility, 3 = max health
+     */
 	
+	public void spendStatPoint(int choice) {
+		
+		if(statPoints <= 0) {
+			System.out.println("No stat points available!");
+			return;
+		}
+		
+		switch(choice) {
+		case 1:
+			this.setStrength(this.getStrength()+1);
+			System.out.println("Strength increased to " + this.getStrength());
+			break;
+		case 2:
+			this.setAgility(this.getAgility()+1);
+			System.out.println("Agility increased to " + this.getAgility());
+			break;
+		case 3:
+			this.setMaxHealth(this.getMaxHealth()+10);
+			System.out.println("Health increased to " + this.getMaxHealth());
+			break;
+		default:
+			System.out.println("Invalid choice");
+			return;
+			
+		}
+		this.statPoints--;
+	}
+		
 	
 	
 	@Override
@@ -1701,7 +2940,11 @@ public class Player extends Character{
 				"Gold: " + this.gold;
 	}
 	
-	//Funktion zum berechnen vom level
+	/**
+	 * Increases the player's level and grants a stat point.
+	 * @param amount
+	 */
+	
 	public void levelUp(int amount) {
 		this.xp += amount;
 		
@@ -1710,6 +2953,12 @@ public class Player extends Character{
 			this.xp = this.xp - this.max_xp;
 			this.max_xp = this.max_xp * 2;
 			this.level ++;
+			
+			System.out.println("\n===== LEVEL UP =====");
+		    System.out.println("You reached level " + level + "!");
+		    System.out.println("You received 1 stat point!");
+		    this.statPoints++;
+		    
 			}
 		}
 	}
@@ -1761,78 +3010,102 @@ public class Player extends Character{
 		return this.normalInventory;
 	}
 
+	public int getStatPoints() {
+		return statPoints;
+	}
+
+	public void setStatPoints(int statPoints) {
+		this.statPoints = statPoints;
+	}
+	
+	
+
 }
 </file>
 
 <file path="game/src/inventory/Demo.java">
 package inventory;
 
-import character.Goblin;
-
 import character.Player;
 import character.PlayerCreator;
-import combat.CombatEngine;
-import combat.CombatView;
 import dungeon.Dungeon;
 import dungeon.Floor;
+import items.HealingPotion;
+import items.Weapon;
+import monster.BossGoblin;
+import monster.Dragon;
+import monster.Goblin;
+import monster.Orc;
+import monster.Vampire;
 import persistence.SaveGameManager;
 import shop.StartPoint;
+import util.AutoSave;
 
 
 public class Demo {
 	public static void main(String[] args) {
 		
 		SaveGameManager saveManager = new SaveGameManager();
-		
-		
 		Player player1 = saveManager.loadPlayer();
 
 		
+		
 		if(player1 == null) {
 			
-			//player1 = new Player("destroyer", "Elf", 75, 100, 10, 2);
 			PlayerCreator playercreator = new PlayerCreator();
 			player1 = playercreator.createPlayer();
 			player1.startStatus();
 			
-			HealingPotion potion = new HealingPotion("Small Healing Potion", 3, 3, 10);
+			HealingPotion potion = new HealingPotion("Small Healing Potion", 3, 10, 3, 10);
 			player1.normalInventory.addItem(potion);
 			
+			if(player1.equipment.getIndexCombatGear("Bow") == -1) {
+				Weapon weapon2 = new Weapon("Bow", 100, 15, 500, 5, "Long Range");
+				player1.equipment.addWeapon(weapon2);
+			}
+		
+			AutoSave.save(player1);
 		}
 		
-		StartPoint startpoint = new StartPoint();
-		startpoint.enter(player1);
 		
-		
-		
-		
-		if(player1.equipment.getIndexCombatGear("Bow") == -1) {
-			Weapon weapon2 = new Weapon("Bow", 100, 500, 5, "Long Range");
-			player1.equipment.addWeapon(weapon2);
-		}
-	
-		
-		
-		Goblin goblin1 = new Goblin("Goblin", 50, 60, 10, 3, 100);
-
-	
 		
 		Dungeon dungeon = new Dungeon();
 		
+		Goblin goblin1 = new Goblin("Goblin", 50, 60, 10, 3, 100);
+
+		
 		dungeon.addFloors(new Floor(1, goblin1));
-		dungeon.addFloors(new Floor(2, new Goblin("Boss Goblin", 120, 120, 20, 5, 500)));
-		
-		dungeon.startDungeon(player1);
-		
-		System.out.println("--- STARTE TEST-SPEICHERUNG ---");
-		saveManager.savePlayer(player1);
-		System.out.println("--- TEST-SPEICHERUNG FERTIG ---");
+		dungeon.addFloors(new Floor(2, new BossGoblin("Boss Goblin", 5, 120, 20, 5, 500)));
+		dungeon.addFloors(new Floor(3, new Orc("Orc", 250, 250, 30, 5, 1500)));
+		dungeon.addFloors(new Floor(4, new Vampire("Vampire", 300, 300, 45, 10, 2500)));
+		dungeon.addFloors(new Floor(5, new Dragon("Strom Dragon", 500, 500, 60, 10, 7000)));
 		
 		
 		
+		StartPoint startpoint = new StartPoint();
 		
 		
+		boolean running = true;
 		
+		while(running) {
+		    boolean enterDungeon = startpoint.enter(player1);
+
+		    if(enterDungeon) {
+
+		        
+		        boolean survived = dungeon.startDungeon(player1);
+		        
+		        if(!survived) {
+		        	running = false;
+		        }
+		        
+		    }else
+		    	running = false;
+		}	
+		
+		AutoSave.save(player1);
+		System.out.println("Thanks for playing");
+			
 		
 	}
 }

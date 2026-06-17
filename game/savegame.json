@@ -13,15 +13,50 @@
         "duration": 3,
         "healPerTurn": 10,
         "name": "Small Healing Potion",
-        "quantity": 3,
+        "quantity": 1,
         "worth": 10,
         "type": "healingPotion"
       },
       {
-        "healAmount": 25,
-        "name": "Small Bandage",
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
         "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "duration": 3,
+        "healPerTurn": 10,
+        "name": "Small Healing Potion",
+        "quantity": 1,
+        "worth": 10,
+        "type": "healingPotion"
+      },
+      {
+        "name": "Goblin Totem",
+        "quantity": 1,
+        "worth": 50,
+        "type": "goblintotem"
+      },
+      {
+        "name": "Orc Tusk",
+        "quantity": 1,
+        "worth": 100,
+        "type": "orctusk"
+      },
+      {
+        "healAmount": 15,
+        "name": "Small Bandage",
+        "quantity": 2,
         "worth": 25,
+        "type": "bandage"
+      },
+      {
+        "healAmount": 30,
+        "name": "Large Bandage",
+        "quantity": 0,
+        "worth": 30,
         "type": "bandage"
       },
       {
@@ -33,55 +68,71 @@
         "type": "healingPotion"
       },
       {
-        "duration": 3,
-        "healPerTurn": 10,
-        "name": "Small Healing Potion",
+        "name": "Goblin Totem",
         "quantity": 1,
-        "worth": 10,
-        "type": "healingPotion"
+        "worth": 50,
+        "type": "goblintotem"
+      },
+      {
+        "name": "Goblin Crown",
+        "quantity": 1,
+        "worth": 300,
+        "type": "bossgoblincrown"
+      },
+      {
+        "name": "Orc Tusk",
+        "quantity": 1,
+        "worth": 100,
+        "type": "orctusk"
+      },
+      {
+        "name": "Vampire Cloak",
+        "quantity": 1,
+        "worth": 250,
+        "type": "vampirecloak"
       }
     ],
     "MAX_SPACE": 30
   },
   "equipment": {
     "equippedWeapon": {
-      "attack": 5,
+      "attack": 70,
       "type": "weapon",
-      "durability": 78,
-      "name": "Sword",
+      "durability": 377,
+      "name": "Dragon Slayer",
       "quantity": 1,
-      "worth": 10
+      "worth": 350
     },
     "DAMAGEUSEITEM": 1,
     "combatGear": [
       {
         "attack": 5,
         "type": "weapon",
-        "durability": 88,
+        "durability": 100,
         "name": "Sword",
         "quantity": 1,
         "worth": 10
       },
       {
-        "attack": 5,
+        "attack": 70,
         "type": "weapon",
-        "durability": 500,
-        "name": "Bow",
-        "quantity": 100,
-        "worth": 15
+        "durability": 390,
+        "name": "Dragon Slayer",
+        "quantity": 1,
+        "worth": 350
       }
     ]
   },
   "race": "Human",
-  "level": 3,
-  "xp": 100,
-  "max_xp": 800,
-  "gold": 20,
-  "statPoint": 0,
-  "name": "domi",
+  "level": 6,
+  "xp": 6000,
+  "max_xp": 6400,
+  "gold": 1685,
+  "statPoints": 1,
+  "name": "Domi",
   "health": 0,
-  "maxHealth": 100,
+  "maxHealth": 110,
   "alive": false,
-  "strength": 10,
-  "agility": 5
+  "strength": 12,
+  "agility": 6
 }

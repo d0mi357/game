@@ -1,6 +1,6 @@
 package dungeon;
 
-import character.Monster;
+import monster.Monster;
 
 public class Floor {
 	private int floorNumber;

@@ -1,4 +1,4 @@
-package inventory;
+package items;
 
 import character.ActiveEffect;
 import character.Player;

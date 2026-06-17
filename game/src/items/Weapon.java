@@ -1,4 +1,4 @@
-package inventory;
+package items;
 
 public class Weapon extends UseableItem {
 	private int attack;

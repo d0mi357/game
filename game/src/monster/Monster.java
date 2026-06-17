@@ -1,8 +1,9 @@
-package character;
+package monster;
 
 import java.util.ArrayList;
 
-import inventory.Item;
+import character.Character;
+import items.Item;
 
 public abstract class Monster extends Character{
 	
@@ -32,6 +33,12 @@ public abstract class Monster extends Character{
 	public int calculateTotalDamage() {
 				return this.getStrength();
 	}
+	
+	/**
+	 * Activates the boss's last stance when its health falls below
+	 * a certain threshold, increasing its combat strength.
+	 */
+	
 	public abstract void lastStance();
 	
 

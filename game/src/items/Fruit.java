@@ -1,4 +1,4 @@
-package inventory;
+package items;
 
 public class Fruit extends Item{
 	private String type;

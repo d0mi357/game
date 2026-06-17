@@ -2,21 +2,37 @@ package combat;
 
 import java.util.Scanner;
 
-import character.Monster;
 import character.Player;
 import inventory.Equipment;
-import inventory.HealingPotion;
-import inventory.Item;
-import inventory.Weapon;
+import items.HealingPotion;
+import items.Item;
+import items.Weapon;
+import monster.Monster;
+
+
+/**
+ * Handles the user interface for battles.
+ * Displays battle status and processes player combat actions.
+ */
 
 public class CombatView {
 
 	private CombatEngine engine;
 	private Scanner scanner = new Scanner(System.in);
 	
+	/**
+     * Creates a new combat view for a combat engine.
+     *
+     * @param engine the combat engine controlling the battle
+     */
+	
 	public CombatView(CombatEngine engine) {
 		this.engine = engine;
 	}
+	
+	/**
+     * Starts the battle loop until the player or monster is defeated.
+     */
 	
 	public void startBattle() {
 		System.out.println("Kampf beginnt " + engine.getPlayer().getName() + " vs " + engine.getMonster().getName()); 
@@ -55,10 +71,24 @@ public class CombatView {
 	
 	}	
 	
+	 /**
+     * Displays damage dealt by an attacker.
+     *
+     * @param name   attacker name
+     * @param damage dealt damage
+     */
 	
 	public void showDamageAndHealth(String name, int damage, int health) {
 		System.out.println(name +" did " + damage + " damage with his attack!");
 	}
+	
+	/**
+     * Generates a visual health bar.
+     *
+     * @param currentHP current health
+     * @param maxHP     maximum health
+     * @return formatted health bar
+     */
 	
 	public String generateHeathBar(float currentHP, float maxHP) {
 		int barLength = 10;
@@ -69,7 +99,7 @@ public class CombatView {
 		if(numFilledBlocks < 0) numFilledBlocks = 0;
 		if (numFilledBlocks > barLength) numFilledBlocks = barLength;
 		
-		StringBuilder bar = new StringBuilder();
+		StringBuilder bar = new StringBuilder();	
 		for(int i = 0;i < barLength;i++) {
 			if(i < numFilledBlocks) {
 				bar.append("■");
@@ -79,6 +109,10 @@ public class CombatView {
 		}
 		return bar.toString();
 	}
+	
+	/**
+     * Prints a compact status dashboard.
+     */
 	
 	private void printStatusDashboard() {
 		System.out.println("\n=================== STATUS ===================");
@@ -92,6 +126,10 @@ public class CombatView {
 		System.out.println("==============================================");	
 		
 	}
+	
+	/**
+     * Displays the current combat status of player and monster.
+     */
 	
 	public void displayStatus() {
 
@@ -118,7 +156,9 @@ public class CombatView {
 	}
 	
 	
-	
+	/**
+     * Reads and handles the player's combat action.
+     */
 	
 	
 	public void handlePlayerInput() {
@@ -157,6 +197,10 @@ public class CombatView {
 		}
 	}
 	
+	/**
+     * Allows the player to switch the equipped weapon.
+     */
+	
 	public void handleWeaponSwitch() {
 		System.out.println("\n==============================================");
 	    System.out.println("🔄  Weapon Switch");
@@ -185,9 +229,13 @@ public class CombatView {
 	    
 	}
 	
+	/**
+     * Allows the player to use an item from the inventory.
+     */
+	
 	public void handlePotionUse() {
 		engine.getPlayer().getInventory().displayInventory();
-		System.out.println("Which Potion do you want to use?");
+		System.out.println("Which Item do you want to use?");
 		System.out.println(">");
 		
 		try {

@@ -2,9 +2,16 @@ package character;
 
 import java.util.ArrayList;
 
+
 import inventory.Equipment;
 import inventory.Inventory;
-import inventory.Weapon;
+import items.Weapon;
+
+
+/**
+ * Represents the player character.
+ * Stores inventory, equipment, stats, experience and active effects.
+ */
 
 public class Player extends Character{
 	
@@ -33,7 +40,9 @@ public class Player extends Character{
 		this.equipment = new Equipment();
 	}
 	
-
+	/**
+     * Sets the starting values for a new player.
+     */
 	
 	public void startStatus() {
 		this.level = 1;
@@ -43,7 +52,11 @@ public class Player extends Character{
 		
 	}
 	
-	
+	/**
+     * Calculates the player's total damage including equipped weapon damage.
+     *
+     * @return total damage dealt by the player
+     */
 
 	
 	public int calculateTotalDamage() {
@@ -55,9 +68,19 @@ public class Player extends Character{
 		return total;
 	}
 	
+	/**
+	 * Adds a temporary effect to the player.
+	 *
+	 * @param effect the effect that should be applied
+	 */
+	
 	public void addEffect(ActiveEffect effect) {
 		activeEffects.add(effect);
 	}
+	
+	/**
+	 * Applies all active effects and removes expired effects.
+	 */
 	
 	public void applyEffects() {
 		for(int i = activeEffects.size() -1; i >= 0; i--) {
@@ -72,6 +95,10 @@ public class Player extends Character{
 			}
 		}
 	}
+	
+	/**
+     * Displays the player's current status.
+     */
 	
 	public void displayStatus() {
 	    System.out.println("\n========== CHARACTER ==========");
@@ -90,6 +117,13 @@ public class Player extends Character{
 	    }
 
 	}
+	
+	/**
+     * Uses one available stat point to increase a selected player attribute.
+     *
+     * @param choice selected attribute:
+     *               1 = strength, 2 = agility, 3 = max health
+     */
 	
 	public void spendStatPoint(int choice) {
 		
@@ -132,7 +166,11 @@ public class Player extends Character{
 				"Gold: " + this.gold;
 	}
 	
-	//Funktion zum berechnen vom level
+	/**
+	 * Increases the player's level and grants a stat point.
+	 * @param amount
+	 */
+	
 	public void levelUp(int amount) {
 		this.xp += amount;
 		
@@ -145,6 +183,7 @@ public class Player extends Character{
 			System.out.println("\n===== LEVEL UP =====");
 		    System.out.println("You reached level " + level + "!");
 		    System.out.println("You received 1 stat point!");
+		    this.statPoints++;
 		    
 			}
 		}
